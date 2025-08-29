@@ -5,7 +5,7 @@ from blueprints.admin.routes import admin_bp
 from blueprints.api.routes import api_bp
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="../templates")
     app.secret_key = "dev_secret_key"
 
     app.register_blueprint(auth_bp)
