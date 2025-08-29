@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Server Error</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-800 via-black to-gray-900">
+  <div class="text-center text-white">
+    <h1 class="text-9xl font-bold">500</h1>
+    <p class="mt-4 text-2xl">Internal Server Error</p>
+    <a href="{{ url_for('index') }}" class="mt-6 inline-block px-6 py-3 bg-white text-red-800 rounded-lg shadow hover:bg-gray-200 transition">
+      Back to Home
+    </a>
+  </div>
+</body>
+</html>
