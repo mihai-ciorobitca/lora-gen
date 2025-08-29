@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from extensions import supabase
 from utils.supabase_helpers import user_exists
+import os
+
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -9,6 +13,9 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
+        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+            session["is_admin"] = True
+            return redirect(url_for("admin.dashboard"))
         try:
             resp = supabase.auth.sign_in_with_password({"email": email, "password": password})
             user, session_data = resp.user, resp.session
