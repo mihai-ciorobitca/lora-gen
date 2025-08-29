@@ -22,7 +22,7 @@ def dashboard_home():
     server_id = user.app_metadata.get("server_id") if user.app_metadata else None
 
     if not server_id:
-        return render_template("dashboard/dashboard_home.html", user=user, restricted=True)
+        return render_template("dashboard.html", user=user, restricted=True)
 
     if request.method == "POST":
         prompt = request.form.get("prompt")
@@ -40,7 +40,6 @@ def dashboard_home():
 
             add_pending_job(user.email, prompt, filename)
             flash("Job submitted successfully.", "success")
-            return redirect(url_for("dashboard.dashboard_pending"))  # 👈 redirect to Pending after POST
 
         except Exception as e:
             logging.error("Image generation failed: %s\n%s", e, traceback.format_exc())
