@@ -31,7 +31,6 @@ def check_jobs():
                 cookies = {f"C.{server_id}_auth_token": inst["token"]}
                 base_url = f"http://{inst['ip_address']}:{inst['port']}/api"
 
-                # Ask Vast API if the image is ready
                 url = view_request(user_email, filename, cookies, base_url)
 
                 if url:

@@ -37,8 +37,10 @@ def dashboard_home():
             with httpx.Client(timeout=30.0) as client:
                 resp = client.post(f"{base_url}/prompt", json=payload, cookies=cookies, headers=headers)
                 resp.raise_for_status()
+            
+            prompt_id = resp.json().get("prompt_id")
 
-            add_pending_job(user.email, prompt, filename)
+            add_pending_job(user.email, prompt, filename, prompt_id)
             flash("Job submitted successfully.", "success")
 
         except Exception as e:

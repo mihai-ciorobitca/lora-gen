@@ -1,8 +1,12 @@
 from extensions import supabase
 
+
 def user_exists(email: str) -> bool:
     res = supabase.auth.admin.list_users()
-    return any(user.user_metadata and user.user_metadata.get("email") == email for user in res)
+    return any(
+        user.user_metadata and user.user_metadata.get("email") == email for user in res
+    )
+
 
 def return_user(email: str):
     res = supabase.auth.admin.list_users()
@@ -11,10 +15,18 @@ def return_user(email: str):
             return user
     return None
 
-def add_pending_job(user_email, prompt, filename):
+
+def add_pending_job(user_email, prompt, filename, prompt_id):
     supabase.table("jobs").insert(
-        {"email": user_email, "prompt": prompt, "filename": filename, "status": False}
+        {
+            "email": user_email,
+            "prompt": prompt,
+            "filename": filename,
+            "status": False,
+            "id": prompt_id,
+        }
     ).execute()
+
 
 def get_pending_jobs(user_email):
     res = (
@@ -26,14 +38,11 @@ def get_pending_jobs(user_email):
     )
     return res.data or []
 
+
 def get_all_pending_jobs():
-    res = (
-        supabase.table("jobs")
-        .select("*")
-        .eq("status", False)
-        .execute()
-    )
+    res = supabase.table("jobs").select("*").eq("status", False).execute()
     return res.data or []
+
 
 def get_history(user_email):
     res = (
@@ -47,8 +56,8 @@ def get_history(user_email):
     print("History fetch result:", res)
     return res.data or []
 
-def mark_job_complete(user_email, filename, url):
-    supabase.table("jobs").update(
-        {"status": True, "url": url}
-    ).eq("email", user_email).eq("filename", filename).execute()
 
+def mark_job_complete(user_email, filename, url):
+    supabase.table("jobs").update({"status": True, "url": url}).eq(
+        "email", user_email
+    ).eq("filename", filename).execute()
