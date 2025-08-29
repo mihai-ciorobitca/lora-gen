@@ -1,9 +1,8 @@
 from flask import Flask, render_template
-from extensions import logger
-from auth.routes import auth_bp
-from dashboard.routes import dashboard_bp
-from admin.routes import admin_bp
-from api.routes import api_bp
+from blueprints.auth.routes import auth_bp
+from blueprints.dashboard.routes import dashboard_bp
+from blueprints.admin.routes import admin_bp
+from blueprints.api.routes import api_bp
 
 def create_app():
     app = Flask(__name__)
@@ -14,7 +13,6 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
 
-    @app.route("/")
     def index():
         return render_template("index.html")
 
@@ -32,12 +30,9 @@ def create_app():
 
     @app.errorhandler(500)
     def server_error(e):
-        logger.error(f"Server Error: {e}")
         return render_template("500.html"), 500
 
     return app
 
 
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True, port=3000)
+app = create_app()
