@@ -15,7 +15,7 @@ def login():
             if user and session_data:
                 session["user"] = user.email
                 session["access_token"] = session_data.access_token
-                return redirect(url_for("dashboard.dashboard"))
+                return redirect(url_for("dashboard.dashboard_home"))
             flash("Login failed. Please check credentials.", "danger")
         except Exception as e:
             flash(f"Login failed: {str(e)}", "danger")
@@ -39,7 +39,7 @@ def register():
                 session["user"] = user.email
                 session["access_token"] = session_data.access_token
                 flash("Registration successful!", "success")
-                return redirect(url_for("dashboard.dashboard"))
+                return redirect(url_for("dashboard.dashboard_home"))
             flash("Please confirm your email.", "warning")
             return redirect(url_for("auth.login"))
         except Exception as e:
