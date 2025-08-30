@@ -14,6 +14,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 @dashboard_bp.route("/dashboard", methods=["GET", "POST"])
 def dashboard_home():
+    print("Session contents:")
     if "user" not in session:
         return redirect(url_for("auth.login"))
 
@@ -26,6 +27,7 @@ def dashboard_home():
     if request.method == "POST":
         prompt = request.form.get("prompt")
         filename = request.form.get("filename")
+        flash(f"Received prompt: {prompt}, filename: {filename}", "info")
         try:
             inst = get_instance_info(server_id)
             cookies = {f"C.{server_id}_auth_token": inst["token"]}
