@@ -86,13 +86,50 @@ def login_google():
     return redirect(res.url)
 
 
-@auth_bp.route("/save_session", methods=["POST"])
-def save_session():
-    data = request.json
-    if not data:
-        return {"error": "No session"}, 400
+@auth_bp.route("/callback")
+def callback():
+    error = request.args.get("error")
+    if error:
+        flash(f"Google login failed: {error}", "danger")
+        return redirect(url_for("auth.login"))
 
+    code = request.args.get("code")
+    if not code:
+        flash("Missing authorization code.", "danger")
+        return redirect(url_for("auth.login"))
+
+    redirect_uri = url_for("auth.callback", _external=True)
+
+    token_url = f"{SUPABASE_URL}/auth/v1/token?grant_type=authorization_code"
+    headers = {
+        "apikey": SUPABASE_ANON_KEY,
+        "Content-Type": "application/x-www-form-urlencoded",  # 👈 important
+    }
+    payload = {"code": code, "redirect_uri": redirect_uri}
+
+    r = requests.post(token_url, headers=headers, data=payload)
+
+    if r.status_code != 200:
+        print("TOKEN ERROR:", r.text)
+        flash("Google login failed. Could not get session.", "danger")
+        return redirect(url_for("auth.login"))
+
+    data = r.json()
     session["access_token"] = data.get("access_token")
     session["refresh_token"] = data.get("refresh_token")
-    session["user"] = data.get("user", {}).get("email")
-    return {"status": "ok"}
+
+    # Fetch user info from Supabase
+    user_info_url = f"{SUPABASE_URL}/auth/v1/user"
+    user_headers = {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": f"Bearer {session['access_token']}",
+    }
+    u = requests.get(user_info_url, headers=user_headers)
+    user_data = u.json()
+
+    # ✅ Store in Flask session (same as email login)
+    session["user"] = user_data.get("email")
+
+    flash("Google login successful!", "success")
+    return redirect(url_for("dashboard.dashboard_home"))
+
