@@ -5,26 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@heroicons/vue/24/solid" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-700 flex">
 
-  <!-- Mobile Top Bar -->
-  <header class="md:hidden flex items-center justify-between bg-white p-4 shadow">
-    <div class="flex items-center gap-2">
-      <span class="text-xl font-bold text-indigo-700">Lora Gen</span>
-    </div>
-    <button id="menuBtn" class="text-gray-700 focus:outline-none">
-      <!-- Hamburger Icon -->
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </button>
-  </header>
-
   <!-- Sidebar -->
-  <aside id="sidebar"
-         class="w-64 bg-white shadow-xl fixed md:static inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-50 flex flex-col">
+  <aside class="w-64 bg-white shadow-xl hidden md:flex flex-col">
     <div class="p-6 border-b flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -66,31 +52,122 @@
     </div>
   </aside>
 
-  <!-- Overlay for mobile -->
-  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden md:hidden"></div>
-
   <!-- Main -->
-  <main class="flex-1 p-4 sm:p-6 md:ml-64 overflow-y-auto space-y-12">
-    {# Keep your existing main content (Dashboard, Pending, History, Account, Settings) here #}
-    <!-- Example placeholder -->
-    <h1 class="text-3xl font-bold text-white">Welcome to your dashboard 🎉</h1>
+  <main class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-12">
+
+    <!-- Dashboard Home -->
+    {% if request.endpoint == 'dashboard.dashboard_home' %}
+      <h1 class="text-3xl font-bold text-white mb-4">Dashboard</h1>
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">✨ Generate New Image</h2>
+
+        {% if restricted %}
+          <div class="p-4 border rounded-lg bg-yellow-50 text-yellow-700 font-medium flex items-center gap-2">
+            ⚠️ Your account is not ready yet.
+          </div>
+        {% else %}
+          <form method="POST" action="{{ url_for('dashboard.dashboard_home') }}" class="space-y-4">
+            <div>
+              <label for="prompt" class="block text-sm font-medium text-gray-700">Prompt</label>
+              <textarea id="prompt" name="prompt" required rows="5"
+                class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600"
+                placeholder="e.g. futuristic city at night"></textarea>
+            </div>
+            <div>
+              <label for="filename" class="block text-sm font-medium text-gray-700">File name</label>
+              <input type="text" id="filename" name="filename" required placeholder="e.g. city_night"
+                class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+            </div>
+            <button type="submit"
+              class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-indigo-700 transition">
+              🚀 Generate
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Pending -->
+    {% if request.endpoint == 'dashboard.dashboard_pending' %}
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">⏳ Pending Generations</h2>
+      {% if pending_images %}
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for job in pending_images %}
+            <div class="p-4 border rounded-xl bg-gray-50 shadow-sm flex flex-col justify-between">
+              <p class="text-sm text-gray-600 mb-2 truncate">{{ job.prompt }}</p>
+              <p class="text-xs text-gray-500">File: {{ job.filename }}</p>
+              <span class="mt-2 inline-block px-3 py-1 text-xs bg-yellow-200 text-yellow-800 rounded-full">
+                🔄 Processing...
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-12 bg-white rounded-xl shadow">
+          <p class="text-gray-400 text-lg">🙌 No pending jobs. Start generating!</p>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- History -->
+    {% if request.endpoint == 'dashboard.dashboard_history' %}
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">📜 Image History</h2>
+      {% if history %}
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for job in history %}
+            <div class="border rounded-xl overflow-hidden shadow hover:shadow-lg transition">
+              <img src="{{ job.url }}" alt="Generated Image" class="w-full rounded-t-lg">
+              <div class="p-4">
+                <p class="text-sm font-medium text-gray-700 truncate">{{ job.prompt }}</p>
+                <p class="text-xs text-gray-500">File: {{ job.filename }}</p>
+                <a href="{{ job.url }}" download="{{ job.filename }}.png"
+                   class="inline-flex items-center mt-2 px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                  ⬇️ Download
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-12 bg-white rounded-xl shadow">
+          <p class="text-gray-400 text-lg">🖼️ No images yet. Generate your first masterpiece!</p>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- Account -->
+    {% if request.endpoint == 'dashboard.dashboard_account' %}
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">👤 Account Information</h2>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div class="p-4 border rounded-lg bg-gray-50">
+          <p class="text-sm text-gray-500">Email</p>
+          <p class="font-medium text-gray-800">{{ user.email }}</p>
+        </div>
+        <div class="p-4 border rounded-lg bg-gray-50">
+          <p class="text-sm text-gray-500">Joined</p>
+          <p class="font-medium text-gray-800">
+            {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Settings -->
+    {% if request.endpoint == 'dashboard.dashboard_settings' %}
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">⚙️ Settings</h2>
+      <form method="POST" action="{{ url_for('auth.reset_password') }}" class="space-y-4 max-w-md">
+        <div>
+          <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
+          <input type="password" id="new_password" name="new_password" required
+            class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+        </div>
+        <button type="submit"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">
+          🔑 Reset Password
+        </button>
+      </form>
+    {% endif %}
+
   </main>
-
-  <!-- Script for toggle -->
-  <script>
-    const menuBtn = document.getElementById("menuBtn");
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("-translate-x-full");
-      overlay.classList.toggle("hidden");
-    });
-
-    overlay.addEventListener("click", () => {
-      sidebar.classList.add("-translate-x-full");
-      overlay.classList.add("hidden");
-    });
-  </script>
 </body>
 </html>

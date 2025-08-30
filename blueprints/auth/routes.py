@@ -123,3 +123,45 @@ def google_callback():
     except Exception as e:
         flash(f"Google login failed: {str(e)}", "danger")
         return redirect(url_for("auth.login"))
+    
+
+@auth_bp.route("/reset_password", methods=["POST"])
+def reset_password():
+    if "user" not in session:
+        flash("You must be logged in to reset your password.", "error")
+        return redirect(url_for("auth.login"))
+
+    new_password = request.form.get("new_password")
+
+    if not new_password or len(new_password) < 6:
+        flash("Password must be at least 6 characters long.", "error")
+        return redirect(url_for("dashboard.dashboard_settings"))
+
+    try:
+        # Get current user email from session
+        user_email = session["user"]
+
+        # Fetch user info via admin
+        users = supabase.auth.admin.list_users()
+        target_user = None
+        for u in users:
+            if u.email == user_email:
+                target_user = u
+                break
+
+        if not target_user:
+            flash("User not found.", "error")
+            return redirect(url_for("dashboard.dashboard_settings"))
+
+        # Update password
+        supabase.auth.admin.update_user_by_id(
+            target_user.id,
+            {"password": new_password}
+        )
+
+        flash("Password reset successfully ✅", "success")
+        return redirect(url_for("dashboard.dashboard_settings"))
+
+    except Exception as e:
+        flash("Something went wrong while resetting password.", "error")
+        return redirect(url_for("dashboard.dashboard_settings"))
