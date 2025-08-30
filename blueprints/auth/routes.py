@@ -52,7 +52,10 @@ def register():
                 {
                     "email": email,
                     "password": password,
-                    "options": {"data": {"server_id": None}},
+                    "options": {
+                        "data": {"server_id": None},
+                        "email_redirect_to": "https://lora-gen.vercel.app/auth/login"
+                    },
                 }
             )
             user, session_data = resp.user, resp.session

@@ -5,7 +5,9 @@ def decode_flask_cookie(secret_key, cookie_str):
     """Decode a Flask session cookie"""
     serializer = itsdangerous.URLSafeTimedSerializer(
         secret_key,
-        salt="cookie-session"
+        salt="cookie-session",
+        serializer=itsdangerous.serializer.JSONSerializer(),
+        signer=itsdangerous.signer.HMACAlgorithm(itdangerous.signer.SHA1)
     )
     
     try:
