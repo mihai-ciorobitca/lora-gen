@@ -2,12 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 import os
 from extensions import supabase
 from utils.supabase_helpers import user_exists
-import httpx
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
