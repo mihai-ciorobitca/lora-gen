@@ -144,8 +144,8 @@ def reset_password():
             flash("User not found.", "error")
             return redirect(url_for("dashboard.dashboard_settings"))
         
-        supabase.auth.admin.update_user_by_id(
-            user.id,
+        supabase.auth.update_user(
+            session["user"],
             {"password": new_password}
         )
 
