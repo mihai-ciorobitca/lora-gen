@@ -10,6 +10,7 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_KEY")  # public anon key, not service ke
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+
 # ----------------- Email/Password Login -----------------
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -22,7 +23,9 @@ def login():
             return redirect(url_for("admin.dashboard"))
 
         try:
-            resp = supabase.auth.sign_in_with_password({"email": email, "password": password})
+            resp = supabase.auth.sign_in_with_password(
+                {"email": email, "password": password}
+            )
             user, session_data = resp.user, resp.session
             if user and session_data:
                 session["user"] = user.email
@@ -79,15 +82,17 @@ def logout():
 # ----------------- Google OAuth -----------------
 @auth_bp.route("/login/google")
 def login_google():
-    # Redirect user to Supabase's Google OAuth page
     redirect_uri = url_for("auth.callback", _external=True)
-    params = {
-        "provider": "google",
-        "redirect_to": redirect_uri,
-    }
-    # Supabase provides an auth/v1/authorize endpoint
-    url = f"{SUPABASE_URL}/auth/v1/authorize?{urllib.parse.urlencode(params)}"
-    return redirect(url)
+    res = supabase.auth.sign_in_with_oauth(
+        {
+            "provider": "google",
+            "options": {
+                "redirect_to": redirect_uri,
+                "queryParams": {"flow_type": "pkce"},
+            },
+        }
+    )
+    return redirect(res.url)
 
 
 @auth_bp.route("/callback")
@@ -127,7 +132,10 @@ def callback():
 
     # Get user info
     user_info_url = f"{SUPABASE_URL}/auth/v1/user"
-    user_headers = {"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {session['access_token']}"}
+    user_headers = {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": f"Bearer {session['access_token']}",
+    }
     u = requests.get(user_info_url, headers=user_headers)
     user_data = u.json()
 
