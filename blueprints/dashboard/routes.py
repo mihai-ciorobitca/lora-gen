@@ -7,6 +7,7 @@ from utils.supabase_helpers import (
     add_pending_job,
     return_user,
 )
+from extensions import supabase
 from utils.vast_helpers import get_instance_info
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -17,8 +18,7 @@ def dashboard_home():
     if "user" not in session:
         return redirect(url_for("auth.login"))
 
-    user_email = session["user"]
-    user = return_user(user_email)
+    user = supabase.auth.get_user(session["access_token"]).user
     server_id = user.app_metadata.get("server_id") if user.app_metadata else None
 
     if not server_id:
