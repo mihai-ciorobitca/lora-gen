@@ -80,15 +80,6 @@ def logout():
     return redirect(url_for("index"))
 
 
-@auth_bp.route("/login/google")
-def login_google():
-    redirect_url = url_for("auth.auth_callback", _external=True)
-    return redirect(
-        f"{SUPABASE_URL}/auth/v1/authorize"
-        f"?provider=google&redirect_to={redirect_url}&response_type=code"
-    )
-
-
 # ----------------- Google Login -----------------
 @auth_bp.route("/login/google")
 def login_google():
