@@ -85,10 +85,10 @@ def login_google():
     redirect_url = url_for("auth.auth_callback", _external=True)
     return redirect(
         f"{SUPABASE_URL}/auth/v1/authorize"
-        f"?provider=google&redirect_to={redirect_url}"
+        f"?provider=google&redirect_to={redirect_url}&response_type=code"
     )
 
-@auth_bp.route("/auth/callback")
+@auth_bp.route("/callback")
 def auth_callback():
     code = request.args.get("code")
     if not code:
