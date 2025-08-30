@@ -34,6 +34,8 @@ def dashboard_home():
             base_url = f"http://{inst['ip_address']}:{inst['port']}/api"
             headers = {"Content-Type": "application/json", "Accept": "*/*"}
 
+            print(cookies, base_url, headers)
+
             payload = build_payload(user.email, filename, prompt)
             with httpx.Client(timeout=30.0) as client:
                 resp = client.post(f"{base_url}/prompt", json=payload, cookies=cookies, headers=headers)
