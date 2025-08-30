@@ -1,8 +1,5 @@
 from extensions import supabase, supabase_admin
-import requests
-import time
-import json
-import os
+from requests import post
 
 def user_exists(email: str) -> bool:
     res = supabase_admin.auth.admin.list_users()
@@ -19,29 +16,6 @@ def return_user(email: str):
     return None
 
 
-def schedule_check(user_email, filename):
-    print("Scheduling Zeplo job check for", user_email, filename, flush=True)
-
-    ZEPLO_TOKEN = os.getenv("ZEPLO_TOKEN")
-    if not ZEPLO_TOKEN:
-        print("❌ ERROR: ZEPLO_TOKEN not set in env", flush=True)
-        return
-
-    url = f"https://zeplo.to/https://lora-gen.vercel.app/api/check_job?_delay=40s&_retry=3&_token={ZEPLO_TOKEN}"
-
-    payload = {"email": user_email, "filename": filename}
-    headers = {"Content-Type": "application/json"}
-
-    r = requests.post(url, headers=headers, data=json.dumps(payload))
-    print("Status:", r.status_code, flush=True)
-    try:
-        print("Response JSON:", r.json(), flush=True)
-    except Exception:
-        print("Response Text:", r.text, flush=True)
-
-
-
-
 def add_pending_job(user_email, prompt, filename, prompt_id):
     supabase.table("jobs").insert(
         {
@@ -51,7 +25,9 @@ def add_pending_job(user_email, prompt, filename, prompt_id):
             "prompt_id": prompt_id,
         }
     ).execute()
-    schedule_check(user_email, filename)
+    url = "https://n8n-service-g0oe.onrender.com/webhook/api/check_job"
+    resp = post(url, json={"email": user_email, "filename": filename})
+    print(resp.json())
 
 
 
