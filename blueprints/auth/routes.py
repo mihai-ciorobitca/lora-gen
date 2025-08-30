@@ -13,6 +13,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        session.clear()
         email = request.form.get("email")
         password = request.form.get("password")
 
