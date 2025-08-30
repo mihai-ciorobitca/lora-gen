@@ -34,7 +34,7 @@ def get_instance_info(instance_id: str | int) -> dict:
         inst = data["instances"]
         token = inst["jupyter_token"]
         ip = inst["public_ipaddr"]
-        port = int(inst["8188/tcp"][0]["HostPort"])
+        port = int(inst["ports"]["8188/tcp"][0]["HostPort"])
 
         session["instance"] = {
             "token": token,

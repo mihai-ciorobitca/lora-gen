@@ -23,7 +23,7 @@ def add_pending_job(user_email, prompt, filename, prompt_id):
             "prompt": prompt,
             "filename": filename,
             "status": False,
-            "id": prompt_id,
+            "prompt_id": prompt_id,
         }
     ).execute()
 

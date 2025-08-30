@@ -114,7 +114,6 @@ def google_callback():
         if user:
             session["user"] = user.email
             session["username"] = user.email.split("@")[0]
-            session["id"] = user.id
             session["access_token"] = response.session.access_token
 
             flash("Logged in successfully with Google!", "success")
