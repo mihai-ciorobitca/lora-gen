@@ -8,8 +8,22 @@ from utils.supabase_helpers import (
 )
 from extensions import supabase
 from utils.vast_helpers import get_instance_info
+from time import sleep
+from requests import get
 
 dashboard_bp = Blueprint("dashboard", __name__)
+
+
+def on_insert():
+    sleep(10)
+    get("https://lora-gen.vercel.app/")
+
+
+supabase.channel("table-db-changes").on(
+    "postgres_changes",
+    {"event": "INSERT", "schema": "public", "table": "jobs"},
+    on_insert,
+).subscribe()
 
 
 @dashboard_bp.route("/dashboard", methods=["GET", "POST"])
@@ -38,9 +52,11 @@ def dashboard_home():
 
             payload = build_payload(user.email, filename, prompt)
             with httpx.Client(timeout=30.0) as client:
-                resp = client.post(f"{base_url}/prompt", json=payload, cookies=cookies, headers=headers)
+                resp = client.post(
+                    f"{base_url}/prompt", json=payload, cookies=cookies, headers=headers
+                )
                 resp.raise_for_status()
-            
+
             prompt_id = resp.json().get("prompt_id")
 
             add_pending_job(user.email, prompt, filename, prompt_id)
@@ -51,6 +67,7 @@ def dashboard_home():
             flash("Failed to generate image.", "danger")
 
     return render_template("dashboard.html", user=user)
+
 
 @dashboard_bp.route("/dashboard/pending")
 def dashboard_pending():
@@ -66,6 +83,7 @@ def dashboard_history():
         return redirect(url_for("auth.login"))
     history = get_history(session["user"])
     return render_template("dashboard.html", history=history)
+
 
 @dashboard_bp.route("/dashboard/account")
 def dashboard_account():
