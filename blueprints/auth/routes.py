@@ -81,7 +81,7 @@ def logout():
 
 # ----------------- Google OAuth -----------------
 @auth_bp.route("/login/google")
-def login_wiht_google():
+def login_google():
     res = supabase.auth.sign_in_with_oauth(
         {
             "provider": "google",

@@ -147,24 +147,5 @@
     {% endif %}
 
   </main>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = window.supabase.createClient(
-            "https://chutzgckwstvxskxzjbk.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNodXR6Z2Nrd3N0dnhza3h6amJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzNzQ3MjYsImV4cCI6MjA3MTk1MDcyNn0.pWQG7hBAutMwS0vffIDix3NUAMi_KfAJQu7V-ScmtLE"
-        );
-
-        supabase.auth.getSession().then(({ data, error }) => {
-            if (data.session) {
-                fetch("/auth/save_session", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data.session)
-                }).then(() => {
-                    window.location.href = "/dashboard";
-                });
-            }
-        });
-    </script>
 </body>
 </html>
