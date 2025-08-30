@@ -1,9 +1,8 @@
 from extensions import supabase, supabase_admin
 import requests
 import time
+import json
 import os
-
-CRON_JOBS_API_KEY = os.getenv("CRON_JOBS_API_KEY")
 
 def user_exists(email: str) -> bool:
     res = supabase_admin.auth.admin.list_users()
@@ -20,37 +19,27 @@ def return_user(email: str):
     return None
 
 
-import time, requests, json
-
 def schedule_check(user_email, filename):
-    run_time = int(time.time()) + 40
+    print("Scheduling Zeplo job check for", user_email, filename, flush=True)
 
-    url = "https://api.cron-job.org/jobs"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {CRON_JOBS_API_KEY}",
-    }
+    ZEPLO_TOKEN = os.getenv("ZEPLO_TOKEN")
+    if not ZEPLO_TOKEN:
+        print("❌ ERROR: ZEPLO_TOKEN not set in env", flush=True)
+        return
 
-    payload = {
-        "job": {
-            "url": "https://lora-gen.vercel.app/api/check_job",
-            "enabled": True,
-            "saveResponses": True,
-            "httpMethod": "POST", 
-            "body": json.dumps({"email": user_email, "filename": filename}),
-            "headers": [
-                {"name": "Content-Type", "value": "application/json"}
-            ],
-            "schedule": {
-                "timezone": "Europe/Berlin",
-                "expiresAt": 0,
-                "runTime": run_time
-            }
-        }
-    }
+    url = f"https://zeplo.to/https://lora-gen.vercel.app/api/check_job?_delay=40s&_retry=3&_token={ZEPLO_TOKEN}"
 
-    r = requests.put(url, headers=headers, json=payload)
-    print(r.status_code, r.text)
+    payload = {"email": user_email, "filename": filename}
+    headers = {"Content-Type": "application/json"}
+
+    r = requests.post(url, headers=headers, data=json.dumps(payload))
+    print("Status:", r.status_code, flush=True)
+    try:
+        print("Response JSON:", r.json(), flush=True)
+    except Exception:
+        print("Response Text:", r.text, flush=True)
+
+
 
 
 def add_pending_job(user_email, prompt, filename, prompt_id):

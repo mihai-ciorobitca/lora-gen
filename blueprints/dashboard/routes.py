@@ -14,11 +14,6 @@ from requests import get
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
-def on_insert():
-    sleep(10)
-    get("https://lora-gen.vercel.app/")
-
-
 @dashboard_bp.route("/dashboard", methods=["GET", "POST"])
 def dashboard_home():
     print("Session contents:")
