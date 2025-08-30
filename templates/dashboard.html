@@ -5,55 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@heroicons/vue/24/solid" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-700 flex">
 
   <!-- Sidebar -->
   <aside class="w-64 bg-white shadow-xl hidden md:flex flex-col">
-    <div class="p-6 border-b">
-      <h2 class="text-2xl font-bold text-indigo-700">Lora Gen</h2>
-      <p class="text-sm text-gray-500">AI Image Generator</p>
+    <div class="p-6 border-b flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      <div>
+        <h2 class="text-2xl font-bold text-indigo-700">Lora Gen</h2>
+        <p class="text-sm text-gray-500">AI Image Generator</p>
+      </div>
     </div>
     <nav class="flex-1 p-4 space-y-2">
-      <a href="{{ url_for('dashboard.dashboard_home') }}"
-         class="block px-4 py-2 rounded-lg {% if request.endpoint == 'dashboard.dashboard_home' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
-         Dashboard
+      <a href="{{ url_for('dashboard.dashboard_home') }}" 
+        class="flex items-center gap-2 px-4 py-2 rounded-lg transition {% if request.endpoint == 'dashboard.dashboard_home' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+        🏠 Dashboard
       </a>
       <a href="{{ url_for('dashboard.dashboard_pending') }}"
-         class="block px-4 py-2 rounded-lg {% if request.endpoint == 'dashboard.dashboard_pending' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
-         Pending
+        class="flex items-center gap-2 px-4 py-2 rounded-lg transition {% if request.endpoint == 'dashboard.dashboard_pending' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+        ⏳ Pending
       </a>
       <a href="{{ url_for('dashboard.dashboard_history') }}"
-         class="block px-4 py-2 rounded-lg {% if request.endpoint == 'dashboard.dashboard_history' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
-         History
+        class="flex items-center gap-2 px-4 py-2 rounded-lg transition {% if request.endpoint == 'dashboard.dashboard_history' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+        📜 History
       </a>
       <a href="{{ url_for('dashboard.dashboard_account') }}"
-         class="block px-4 py-2 rounded-lg {% if request.endpoint == 'dashboard.dashboard_account' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
-         Account
+        class="flex items-center gap-2 px-4 py-2 rounded-lg transition {% if request.endpoint == 'dashboard.dashboard_account' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+        👤 Account
       </a>
       <a href="{{ url_for('dashboard.dashboard_settings') }}"
-         class="block px-4 py-2 rounded-lg {% if request.endpoint == 'dashboard.dashboard_settings' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
-         Settings
+        class="flex items-center gap-2 px-4 py-2 rounded-lg transition {% if request.endpoint == 'dashboard.dashboard_settings' %}bg-indigo-100 text-indigo-700 font-semibold{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+        ⚙️ Settings
       </a>
     </nav>
     <div class="p-4 border-t">
       <form action="/auth/logout" method="POST">
         <button type="submit"
-          class="block w-full text-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
-          Logout
+          class="w-full text-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+          🚪 Logout
         </button>
       </form>
     </div>
   </aside>
 
   <!-- Main -->
-  <main class="flex-1 p-6 overflow-y-auto space-y-12">
+  <main class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-12">
 
-    {# -------- Dashboard Home -------- #}
+    <!-- Dashboard Home -->
     {% if request.endpoint == 'dashboard.dashboard_home' %}
       <h1 class="text-3xl font-bold text-white mb-4">Dashboard</h1>
       <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Generate New Image</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">✨ Generate New Image</h2>
 
         {% if restricted %}
           <div class="p-4 border rounded-lg bg-yellow-50 text-yellow-700 font-medium flex items-center gap-2">
@@ -74,16 +80,16 @@
             </div>
             <button type="submit"
               class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-indigo-700 transition">
-              Generate
+              🚀 Generate
             </button>
           </form>
         {% endif %}
       </div>
     {% endif %}
 
-    {# -------- Pending -------- #}
+    <!-- Pending -->
     {% if request.endpoint == 'dashboard.dashboard_pending' %}
-      <h2 class="text-xl font-semibold mb-4 text-gray-800">Pending Generations</h2>
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">⏳ Pending Generations</h2>
       {% if pending_images %}
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {% for job in pending_images %}
@@ -91,41 +97,47 @@
               <p class="text-sm text-gray-600 mb-2 truncate">{{ job.prompt }}</p>
               <p class="text-xs text-gray-500">File: {{ job.filename }}</p>
               <span class="mt-2 inline-block px-3 py-1 text-xs bg-yellow-200 text-yellow-800 rounded-full">
-                Processing...
+                🔄 Processing...
               </span>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-gray-500">No pending generations.</p>
+        <div class="text-center py-12 bg-white rounded-xl shadow">
+          <p class="text-gray-400 text-lg">🙌 No pending jobs. Start generating!</p>
+        </div>
       {% endif %}
     {% endif %}
 
-    {# -------- History -------- #}
+    <!-- History -->
     {% if request.endpoint == 'dashboard.dashboard_history' %}
-      <h2 class="text-xl font-semibold mb-4 text-gray-800">Image History</h2>
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">📜 Image History</h2>
       {% if history %}
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for job in history %}
             <div class="border rounded-xl overflow-hidden shadow hover:shadow-lg transition">
-              <img src="{{ job.url }}" alt="Generated Image" class="w-full rounded-lg">
+              <img src="{{ job.url }}" alt="Generated Image" class="w-full rounded-t-lg">
               <div class="p-4">
                 <p class="text-sm font-medium text-gray-700 truncate">{{ job.prompt }}</p>
                 <p class="text-xs text-gray-500">File: {{ job.filename }}</p>
                 <a href="{{ job.url }}" download="{{ job.filename }}.png"
-                   class="text-indigo-600 text-xs hover:underline">Download</a>
+                   class="inline-flex items-center mt-2 px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                  ⬇️ Download
+                </a>
               </div>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-gray-500">No history yet.</p>
+        <div class="text-center py-12 bg-white rounded-xl shadow">
+          <p class="text-gray-400 text-lg">🖼️ No images yet. Generate your first masterpiece!</p>
+        </div>
       {% endif %}
     {% endif %}
 
-    {# -------- Account -------- #}
+    <!-- Account -->
     {% if request.endpoint == 'dashboard.dashboard_account' %}
-      <h2 class="text-xl font-semibold mb-4 text-gray-800">Account Information</h2>
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">👤 Account Information</h2>
       <div class="grid sm:grid-cols-2 gap-6">
         <div class="p-4 border rounded-lg bg-gray-50">
           <p class="text-sm text-gray-500">Email</p>
@@ -140,10 +152,20 @@
       </div>
     {% endif %}
 
-    {# -------- Settings -------- #}
+    <!-- Settings -->
     {% if request.endpoint == 'dashboard.dashboard_settings' %}
-      <h2 class="text-xl font-semibold mb-4 text-gray-800">Settings</h2>
-      <p class="text-gray-500">Settings content goes here.</p>
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">⚙️ Settings</h2>
+      <form method="POST" action="{{ url_for('dashboard.reset_password') }}" class="space-y-4 max-w-md">
+        <div>
+          <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
+          <input type="password" id="new_password" name="new_password" required
+            class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+        </div>
+        <button type="submit"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">
+          🔑 Reset Password
+        </button>
+      </form>
     {% endif %}
 
   </main>
