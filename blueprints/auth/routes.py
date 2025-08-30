@@ -145,7 +145,6 @@ def reset_password():
             return redirect(url_for("dashboard.dashboard_settings"))
         
         supabase.auth.update_user(
-            session["user"],
             {"password": new_password}
         )
 
