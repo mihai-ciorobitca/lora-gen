@@ -24,21 +24,24 @@
             <h2 class="mt-4 text-2xl font-bold text-gray-900">Login</h2>
             <p class="text-gray-600">Access your account securely</p>
         </div>
-        
-                {# Flash messages (success, danger, warning, info) #}
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div class="mb-6 space-y-3">
-                            {% for category, message in messages %}
-                                <div class="rounded-md p-3 border-l-4 {% if category == 'success' %}border-green-500 bg-green-50{% elif category == 'danger' %}border-red-500 bg-red-50{% elif category == 'warning' %}border-yellow-500 bg-yellow-50{% else %}border-blue-500 bg-blue-50{% endif %}">
-                                    <p class="text-sm {% if category == 'success' %}text-green-800{% elif category == 'danger' %}text-red-800{% elif category == 'warning' %}text-yellow-800{% else %}text-blue-800{% endif %}">{{ message }}</p>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
 
-                <!-- Login Form -->
+        {# Flash messages (success, danger, warning, info) #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-6 space-y-3">
+            {% for category, message in messages %}
+            <div
+                class="rounded-md p-3 border-l-4 {% if category == 'success' %}border-green-500 bg-green-50{% elif category == 'danger' %}border-red-500 bg-red-50{% elif category == 'warning' %}border-yellow-500 bg-yellow-50{% else %}border-blue-500 bg-blue-50{% endif %}">
+                <p
+                    class="text-sm {% if category == 'success' %}text-green-800{% elif category == 'danger' %}text-red-800{% elif category == 'warning' %}text-yellow-800{% else %}text-blue-800{% endif %}">
+                    {{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Login Form -->
         <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-4">
             <div>
                 <label for="email" class="block text-sm font-semibold text-gray-800">Email</label>
@@ -63,21 +66,12 @@
             <div class="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <!-- Google Register -->
-        <a href=""
+        <a href="{{ url_for('auth.login_google') }}"
             class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-medium py-3 rounded-lg shadow hover:bg-gray-50 transition">
-            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#EA4335"
-                    d="M24 9.5c3.15 0 5.95 1.08 8.15 3.2l6.07-6.07C34.18 3.1 29.39 1 24 1 14.64 1 6.6 6.85 3.24 15.15l7.52 5.85C12.16 13.7 17.57 9.5 24 9.5z" />
-                <path fill="#34A853"
-                    d="M46.1 24.5c0-1.58-.14-3.1-.39-4.57H24v9.09h12.47c-.54 2.91-2.16 5.38-4.61 7.04l7.05 5.49C43.53 37.18 46.1 31.34 46.1 24.5z" />
-                <path fill="#4A90E2"
-                    d="M10.76 28.15A13.94 13.94 0 0 1 9.5 24c0-1.44.26-2.82.72-4.15L2.7 14a22.49 22.49 0 0 0 0 20.99l8.06-6.84z" />
-                <path fill="#FBBC05"
-                    d="M24 46c6.39 0 11.75-2.11 15.65-5.73l-7.05-5.49C30.88 36.38 27.62 37.5 24 37.5c-6.43 0-11.84-4.2-13.24-10.15l-7.52 5.85C6.6 41.15 14.64 47 24 47z" />
-            </svg>
-            Sign up with Google
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" class="w-5 h-5 mr-2">
+            Sign In with Google
         </a>
+
 
         <!-- Extra links -->
         <div class="mt-6 text-center text-sm">
