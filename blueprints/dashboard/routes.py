@@ -5,7 +5,6 @@ from utils.supabase_helpers import (
     get_history,
     get_pending_jobs,
     add_pending_job,
-    return_user,
 )
 from extensions import supabase
 from utils.vast_helpers import get_instance_info
@@ -68,7 +67,7 @@ def dashboard_history():
 def dashboard_account():
     if "user" not in session:
         return redirect(url_for("auth.login"))
-    user = return_user(session["user"])
+    user = supabase.auth.get_user(session["access_token"]).user
     return render_template("dashboard.html", user=user)
 
 
@@ -76,4 +75,5 @@ def dashboard_account():
 def dashboard_settings():
     if "user" not in session:
         return redirect(url_for("auth.login"))
-    return render_template("dashboard.html")
+    user = supabase.auth.get_user(session["access_token"]).user
+    return render_template("dashboard.html", user=user)
