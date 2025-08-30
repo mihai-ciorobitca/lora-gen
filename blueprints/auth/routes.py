@@ -88,30 +88,41 @@ def login_google():
         f"?provider=google&redirect_to={redirect_url}&response_type=code"
     )
 
-@auth_bp.route("/callback")
-def auth_callback():
+
+# ----------------- Google Login -----------------
+@auth_bp.route("/login/google")
+def login_google():
+    response = supabase.auth.sign_in_with_oauth(
+        {
+            "provider": "google",
+            "options": {"redirect_to": url_for("auth.google_callback", _external=True)},
+        }
+    )
+    return redirect(response.url)
+
+
+@auth_bp.route("/google/callback")
+def google_callback():
     code = request.args.get("code")
+    next_url = request.args.get("next", url_for("dashboard.dashboard_home"))
+
     if not code:
-        return "No code returned", 400
+        flash("Google login failed. No authorization code returned.", "danger")
+        return redirect(url_for("auth.login"))
 
     try:
-        # Exchange code for session
-        resp = httpx.post(
-            f"{SUPABASE_URL}/auth/v1/token?grant_type=authorization_code",
-            headers={"Content-Type": "application/json"},
-            json={
-                "code": code,
-                "redirect_to": url_for("auth.auth_callback", _external=True),
-            },
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        response = supabase.auth.exchange_code_for_session({"auth_code": code})
+        user = response.user
 
-        # Save session data in Flask session
-        session["user"] = data["user"]["email"]
-        session["access_token"] = data["access_token"]
-        session["refresh_token"] = data.get("refresh_token")
+        if user:
+            session["user"] = user.email
+            session["username"] = user.email.split("@")[0]
+            session["id"] = user.id
+            session["access_token"] = response.session.access_token
 
-        return redirect(url_for("dashboard.dashboard_home"))
+            flash("Logged in successfully with Google!", "success")
+            return redirect(next_url)
+
     except Exception as e:
-        return f"Auth failed: {str(e)}", 400
+        flash(f"Google login failed: {str(e)}", "danger")
+        return redirect(url_for("auth.login"))
