@@ -81,18 +81,35 @@ def logout():
 
 # ----------------- Google OAuth -----------------
 @auth_bp.route("/login/google")
-def login_google():
-    res = supabase.auth.sign_in_with_oauth({"provider": "google"})
+def login_wiht_google():
+    res = supabase.auth.sign_in_with_oauth(
+        {
+            "provider": "google",
+            "options": {
+	            "redirect_to": f"{request.host_url}/auth/callback"
+	        },
+        }
+    )
     return redirect(res.url)
 
 
-@auth_bp.route("/save_session", methods=["POST"])
-def save_session():
-    data = request.json
-    if not data:
-        return {"error": "no session"}, 400
+@auth_bp.route("/callback")
+def callback():
+    code = request.args.get("code")
+    if not code:
+        flash("Missing authorization code.", "danger")
+        return redirect(url_for("auth.login"))
 
-    session["access_token"] = data.get("access_token")
-    session["refresh_token"] = data.get("refresh_token")
-    session["user"] = data.get("user", {}).get("email")
-    return {"status": "ok"}
+    res = supabase.auth.exchange_code_for_session({"auth_code": code})
+    session_data = res.session
+    user = res.user
+
+    if session_data and user:
+        session["access_token"] = session_data.access_token
+        session["refresh_token"] = session_data.refresh_token
+        session["user"] = user.email
+        flash("Google login successful!", "success")
+        return redirect(url_for("dashboard.dashboard_home"))
+    else:
+        flash("Google login failed.", "danger")
+        return redirect(url_for("auth.login"))
