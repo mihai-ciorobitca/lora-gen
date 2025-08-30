@@ -1,5 +1,9 @@
 from extensions import supabase, supabase_admin
+import requests
+import time
+import os
 
+CRON_JOBS_API_KEY = os.getenv("CRON_JOBS_API_KEY")
 
 def user_exists(email: str) -> bool:
     res = supabase_admin.auth.admin.list_users()
@@ -16,6 +20,39 @@ def return_user(email: str):
     return None
 
 
+import time, requests, json
+
+def schedule_check(user_email, filename):
+    run_time = int(time.time()) + 40
+
+    url = "https://api.cron-job.org/jobs"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {CRON_JOBS_API_KEY}",
+    }
+
+    payload = {
+        "job": {
+            "url": "https://lora-gen.vercel.app/api/check_job",
+            "enabled": True,
+            "saveResponses": True,
+            "httpMethod": "POST", 
+            "body": json.dumps({"email": user_email, "filename": filename}),
+            "headers": [
+                {"name": "Content-Type", "value": "application/json"}
+            ],
+            "schedule": {
+                "timezone": "Europe/Berlin",
+                "expiresAt": 0,
+                "runTime": run_time
+            }
+        }
+    }
+
+    r = requests.put(url, headers=headers, json=payload)
+    print(r.status_code, r.text)
+
+
 def add_pending_job(user_email, prompt, filename, prompt_id):
     supabase.table("jobs").insert(
         {
@@ -25,6 +62,8 @@ def add_pending_job(user_email, prompt, filename, prompt_id):
             "prompt_id": prompt_id,
         }
     ).execute()
+    schedule_check(user_email, filename)
+
 
 
 def get_pending_jobs(user_email):

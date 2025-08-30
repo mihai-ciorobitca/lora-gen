@@ -19,13 +19,6 @@ def on_insert():
     get("https://lora-gen.vercel.app/")
 
 
-supabase.channel("table-db-changes").on(
-    "postgres_changes",
-    {"event": "INSERT", "schema": "public", "table": "jobs"},
-    on_insert,
-).subscribe()
-
-
 @dashboard_bp.route("/dashboard", methods=["GET", "POST"])
 def dashboard_home():
     print("Session contents:")
