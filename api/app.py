@@ -3,10 +3,11 @@ from blueprints.auth.routes import auth_bp
 from blueprints.dashboard.routes import dashboard_bp
 from blueprints.admin.routes import admin_bp
 from blueprints.api.routes import api_bp
+import os
 
 def create_app():
     app = Flask(__name__, template_folder="../templates")
-    app.secret_key = "dev_secret_key"
+    app.secret_key = os.getenv("FLASK_KEY")
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
