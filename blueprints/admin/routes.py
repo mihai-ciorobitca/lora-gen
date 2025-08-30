@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
-from extensions import supabase
+from extensions import supabase_admin
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -8,7 +8,7 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def dashboard():
     if not session.get("is_admin", False):
         return redirect(url_for("auth.login"))
-    response = supabase.auth.admin.list_users()
+    response = supabase_admin.auth.admin.list_users()
     return render_template("admin.html", users=response)
 
 
@@ -17,9 +17,9 @@ def toggle_verify():
     if not session.get("is_admin", False):
         return redirect(url_for("auth.login"))
     user_id = request.form["user_id"]
-    user = supabase.auth.admin.get_user_by_id(user_id).user
+    user = supabase_admin.auth.admin.get_user_by_id(user_id).user
     verified = user.user_metadata.get("email_verified", False)
-    supabase.auth.admin.update_user_by_id(
+    supabase_admin.auth.admin.update_user_by_id(
         user_id, {"user_metadata": {"email_verified": not verified}}
     )
     flash("User verification updated.", "success")
@@ -34,7 +34,7 @@ def update_server_id():
     server_id = request.form.get("server_id")
 
     try:
-        supabase.auth.admin.update_user_by_id(
+        supabase_admin.auth.admin.update_user_by_id(
             user_id, {"app_metadata": {"server_id": server_id}}
         )
         flash("Server ID updated successfully!", "success")
@@ -50,7 +50,7 @@ def delete_user():
         return redirect(url_for("auth.login"))
     user_id = request.form.get("user_id")
     try:
-        supabase.auth.admin.delete_user(user_id)
+        supabase_admin.auth.admin.delete_user(user_id)
         flash("User deleted successfully.", "success")
     except Exception as e:
         flash(f"Error deleting user: {str(e)}", "danger")
