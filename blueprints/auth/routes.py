@@ -138,24 +138,15 @@ def reset_password():
         return redirect(url_for("dashboard.dashboard_settings"))
 
     try:
-        # Get current user email from session
-        user_email = session["user"]
+        user = supabase.auth.get_user(session["access_token"]).user
 
-        # Fetch user info via admin
-        users = supabase.auth.admin.list_users()
-        target_user = None
-        for u in users:
-            if u.email == user_email:
-                target_user = u
-                break
-
-        if not target_user:
+        if not user:
             flash("User not found.", "error")
             return redirect(url_for("dashboard.dashboard_settings"))
 
         # Update password
         supabase.auth.admin.update_user_by_id(
-            target_user.id,
+            user.id,
             {"password": new_password}
         )
 
