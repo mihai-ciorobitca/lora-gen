@@ -22,7 +22,6 @@ def add_pending_job(user_email, prompt, filename, prompt_id):
             "email": user_email,
             "prompt": prompt,
             "filename": filename,
-            "status": False,
             "prompt_id": prompt_id,
         }
     ).execute()
@@ -58,6 +57,6 @@ def get_history(user_email):
 
 
 def mark_job_complete(user_email, filename, url):
-    supabase.table("jobs").update({"status": True, "url": url}).eq(
+    supabase_admin.table("jobs").update({"status": True, "url": url}).eq(
         "email", user_email
     ).eq("filename", filename).execute()

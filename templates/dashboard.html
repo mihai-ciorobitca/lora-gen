@@ -124,11 +124,11 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for job in history %}
             <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-              <img src="{{ job.url }}" alt="Generated Image" class="w-full object-cover h-40">
+              <img src="{{ job.url }}" alt="Generated Image" class="w-full object-cover h-auto">
               <div class="p-4">
                 <p class="text-sm font-medium text-gray-700 truncate">{{ job.prompt }}</p>
                 <p class="text-xs text-gray-500">File: {{ job.filename }}</p>
-                <a href="{{ job.url }}" download="{{ job.filename }}.png"
+                <a href="{{ job.url }}download" download="{{ job.filename }}.png"
                    class="inline-flex items-center mt-3 px-3 py-1 text-xs bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
                   ⬇️ Download
                 </a>
