@@ -36,20 +36,15 @@ def create_app():
     @app.errorhandler(404)
     @cache.cached(timeout=3600)
     def not_found(e):
-        return render_template("404.html"), 404
-
-    @app.errorhandler(405)
-    @cache.cached(timeout=3600)
-    def method_not_allowed(e):
-        return render_template("405.html"), 405
+        return render_template("errors/404.html"), 404
 
     @app.errorhandler(500)
     @cache.cached(timeout=3600)
     def server_error(e):
-        return render_template("500.html"), 500
+        return render_template("errors/500.html"), 500
     
     @app.route("/faq")
-    @cache.cached(timeout=3600)
+    #@cache.cached(timeout=3600)
     def faq():
         return render_template("faq.html"), 500
     

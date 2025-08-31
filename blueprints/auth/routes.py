@@ -12,7 +12,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 @auth_bp.get("/login")
 @cache.cached(timeout=3600)
 def login_get():
-    return render_template("login.html")
+    return render_template("auth/login.html")
 
 
 @auth_bp.post("/login")
@@ -34,21 +34,21 @@ def login_post():
         if user and session_data:
             session["user"] = user.email
             session["access_token"] = session_data.access_token
-            return redirect(url_for("dashboard.dashboard_home"))
+            return redirect(url_for("dashboard.dashboard_get"))
 
         flash("Login failed. Please check credentials.", "danger")
         # 👇 re-render login.html with flashed message
-        return render_template("login.html")
+        return render_template("auth/login.html")
 
     except Exception as e:
         flash(f"Login failed: {str(e)}", "danger")
-        return render_template("login.html")
+        return render_template("auth/login.html")
 
 
 @auth_bp.get("/register")
 @cache.cached(timeout=3600)
 def register_get():
-    return render_template("register.html")
+    return render_template("auth/register.html")
 
 
 @auth_bp.post("/register")
@@ -60,7 +60,7 @@ def register_post():
 
     if user_exists(email):
         flash("This email is already registered. Please log in.", "danger")
-        return render_template("register.html")
+        return render_template("auth/register.html")
 
     try:
         resp = supabase.auth.sign_up(
@@ -72,22 +72,23 @@ def register_post():
                         "server_id": None,
                         "full_name": f"{fname} {lname}",
                     },
-                    "email_redirect_to": "https://lora-gen.vercel.app/auth/login",
+                    "email_redirect_to": "https://lora-gen.onrender.com/auth/login",
                 },
             }
         )
+        print(resp)
         user, session_data = resp.user, resp.session
         if user and session_data:
             session["user"] = user.email
             session["access_token"] = session_data.access_token
             flash("Registration successful!", "success")
-            return redirect(url_for("dashboard.dashboard_home"))
+            return redirect(url_for("dashboard.dashboard"))
 
         flash("Please confirm your email.", "warning")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login_get"))
     except Exception as e:
         flash(f"Registration failed: {str(e)}", "danger")
-        return render_template("register.html")
+        return render_template("auth/register.html")
 
 
 @auth_bp.route("/logout", methods=["POST"])

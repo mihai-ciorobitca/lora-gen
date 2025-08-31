@@ -5,29 +5,28 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 
-def login_required(f):
+def login_required_admin(f):
     from functools import wraps
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if "is_admin" not in session:
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login_get"))
         return f(*args, **kwargs)
 
     return decorated_function
 
 
-@admin_bp.route("/")
-@login_required
+@admin_bp.get("/")
+@login_required_admin
 def dashboard():
     response = supabase_admin.auth.admin.list_users()
     return render_template("admin.html", users=response)
 
 
-@admin_bp.route("/toggle_verify", methods=["POST"])
+@admin_bp.post("/toggle_verify")
+@login_required_admin
 def toggle_verify():
-    if not session.get("is_admin", False):
-        return redirect(url_for("auth.login"))
     user_id = request.form["user_id"]
     user = supabase_admin.auth.admin.get_user_by_id(user_id).user
     verified = user.user_metadata.get("email_verified", False)
@@ -38,7 +37,8 @@ def toggle_verify():
     return redirect(url_for("admin.dashboard"))
 
 
-@admin_bp.route("/update_server_id", methods=["POST"])
+@admin_bp.post("/update_server_id")
+@login_required_admin
 def update_server_id():
     if not session.get("is_admin", False):
         return redirect(url_for("auth.login"))
@@ -56,10 +56,9 @@ def update_server_id():
     return redirect(url_for("admin.dashboard"))
 
 
-@admin_bp.route("/delete_user", methods=["POST"])
+@admin_bp.post("/delete_user")
+@login_required_admin
 def delete_user():
-    if not session.get("is_admin", False):
-        return redirect(url_for("auth.login"))
     user_id = request.form.get("user_id")
     try:
         supabase_admin.auth.admin.delete_user(user_id)

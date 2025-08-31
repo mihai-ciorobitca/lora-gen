@@ -28,7 +28,7 @@
   x-init="
          darkMode = JSON.parse(localStorage.getItem(&#39;darkMode&#39;));
          $watch(&#39;darkMode&#39;, value =&gt; localStorage.setItem(&#39;darkMode&#39;, JSON.stringify(value)))"
-  :class="{&#39;dark bg-gray-900&#39;: darkMode === true}">
+  :class="{&#39;dark bg-gray-900&#39;: darkMode === true}" class="h-full">
   <!-- ===== Preloader Start ===== -->
   <div x-show="loaded"
     x-init="window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {setTimeout(() =&gt; loaded = false, 500)})"
@@ -246,7 +246,7 @@
                       <a href="https://demo.tailadmin.com/video-generator.html"
                         class="menu-dropdown-item group menu-dropdown-item-inactive"
                         :class="page === &#39;videoGenerator&#39; ? &#39;menu-dropdown-item-active&#39; : &#39;menu-dropdown-item-inactive&#39;">
-                        Video Generator
+                        LoRA Image Generator
                       </a>
                     </li>
                   </ul>
@@ -1666,12 +1666,13 @@
       <!-- ===== Header End ===== -->
 
       <!-- ===== Main Content Start ===== -->
-      <main>
+      <main class="flex-1 flex flex-col h-full overflow-y-auto">
         <!-- Breadcrumb Start -->
-        <div x-data="{ pageName: `Video Generator`}">
+        <div x-data="{ pageName: `LoRA Image Generation`}">
           <div
             class="relative flex w-full flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-6 py-5 dark:border-gray-800 dark:bg-gray-900">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName">Video Generator</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName">LoRA Image Generation
+            </h2>
             <nav>
               <ol class="flex items-center gap-1.5">
                 <li>
@@ -1685,7 +1686,7 @@
                     </svg>
                   </a>
                 </li>
-                <li class="text-sm text-gray-800 dark:text-white/90" x-text="pageName">Video Generator</li>
+                <li class="text-sm text-gray-800 dark:text-white/90" x-text="pageName">LoRA Image Generation</li>
               </ol>
             </nav>
           </div>
@@ -1695,162 +1696,71 @@
         <!-- Content Start -->
         <div class="relative h-[calc(100vh-146px)] px-4 xl:flex xl:px-0">
           <!-- Mobile Chat Header  -->
-          <div
-            class="my-6 flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-3 xl:hidden dark:border-gray-800 dark:bg-gray-900">
-            <h4 class="pl-2 text-lg font-medium text-gray-800 dark:text-white/90">
-              Chats History
-            </h4>
-            <button @click="isSidebarOpen = true"
-              class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6L20 6M4 18L20 18M4 12L20 12" stroke="currentColor" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </button>
-          </div>
+          <div class="flex flex-col flex-1 h-full">
+            <div
+              class="my-6 flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-3 xl:hidden dark:border-gray-800 dark:bg-gray-900">
+              <h4 class="pl-2 text-lg font-medium text-gray-800 dark:text-white/90">
+                Chats History
+              </h4>
+              <button @click="isSidebarOpen = true"
+                class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6L20 6M4 18L20 18M4 12L20 12" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
 
-          <div class="flex-1 xl:py-10">
-            <div class="relative mx-auto flex max-w-[720px] flex-col">
-              <div class="custom-scrollbar relative z-20 max-h-[50vh] flex-1 space-y-7 overflow-y-auto pb-10 lg:pb-7">
-                <!-- User Message -->
-                <div class="flex justify-end">
-                  <div
-                    class="shadow-theme-xs bg-brand-100 dark:bg-brand-500/20 max-w-[480px] rounded-xl rounded-tr-xs px-4 py-3">
-                    <p class="text-left text-sm font-normal text-gray-800 dark:text-white/90">
-                      Can you generate some random, creative, and engaging
-                      placeholder text for me? It doesn't need to follow any
-                      specific structure—just something fun or interesting to
-                      fill space temporarily.
-                    </p>
-                  </div>
-                </div>
 
-                <!-- AI Response -->
-                <div class="flex justify-start">
-                  <div>
-                    <div
-                      class="shadow-theme-xs max-w-[480px] rounded-xl rounded-tl-xs bg-gray-100 px-4 py-3 dark:bg-white/5">
-                      <p class="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing
-                        elit. Vivamus et varius tortor. Aenean dui magna,
-                        vehicula in lacinia non, euismod sed odio. Aliquam
-                        erat volutpat.
-                      </p>
-                      <p class="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-                        Integer iaculis eu tellus vel tincidunt. Sed sed
-                        dictum orci, in pretium erat. Proin ut mi a arcu
-                        mollis hendrerit. Ut id est finibus, egestas tellus
-                        ac, pharetra ante.
-                      </p>
-                    </div>
-                    <div class="mt-3">
-                      <button x-data="{ copied: false }"
-                        @click="copied = true; navigator.clipboard.writeText(&#39;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor. Aenean dui magna, vehicula in lacinia non, euismod sed odio. Aliquam erat volutpat. Integer iaculis eu tellus vel tincidunt. Sed sed dictum orci, in pretium erat. Proin ut mi a arcu mollis hendrerit. Ut id est finibus, egestas tellus ac, pharetra ante.&#39;); setTimeout(() =&gt; copied = false, 2000)"
-                        class="flex h-8 items-center gap-1 rounded-full border border-gray-100 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-500 dark:border-white/5 dark:bg-gray-900 dark:text-gray-400 dark:hover:text-white/90">
-                        <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                          viewBox="0 0 20 20" fill="none">
-                          <path
-                            d="M14.1567 14.1628H7.08803C6.39768 14.1628 5.83803 13.6031 5.83803 12.9128V5.8441M14.1567 14.1628L14.1567 15.416C14.1567 16.1064 13.5971 16.666 12.9067 16.666H4.58478C3.89442 16.666 3.33478 16.1064 3.33478 15.416V7.0941C3.33478 6.40374 3.89442 5.8441 4.58478 5.8441H5.83803M14.1567 14.1628H15.4152C16.1056 14.1628 16.6652 13.6031 16.6652 12.9128L16.6652 4.58392C16.6652 3.89357 16.1056 3.33392 15.4152 3.33392H7.08803C6.39768 3.33392 5.83803 3.89357 5.83803 4.58392V5.8441"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                          </path>
-                        </svg>
-                        <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                          viewBox="0 0 20 20" fill="none" style="display: none;">
-                          <path d="M16.6663 5L7.49967 14.1667L3.33301 10" stroke="currentColor" stroke-width="1.5"
-                            stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                        <span x-text="copied ? &#39;Copied&#39; : &#39;Copy&#39;">Copy</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- User Message -->
-                <div class="flex justify-end">
-                  <div
-                    class="shadow-theme-xs bg-brand-100 dark:bg-brand-500/20 max-w-[480px] rounded-xl rounded-tr-xs px-4 py-3">
-                    <p class="text-left text-sm font-normal text-gray-800 dark:text-white/90">
-                      I'm looking for a block of random, imaginative
-                      text—something quirky or unexpected to use as
-                      placeholder content.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- AI Response -->
-                <div class="flex justify-start">
-                  <div>
-                    <div
-                      class="shadow-theme-xs max-w-[480px] rounded-xl rounded-tl-xs bg-gray-100 px-4 py-3 dark:bg-white/5">
-                      <p class="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing
-                        elit. Vivamus et varius tortor. Aenean dui magna,
-                        vehicula in lacinia non, euismod sed odio. Aliquam
-                        erat volutpat. Integer iaculis eu tellus vel
-                        tincidunt. Sed sed dictum orci, in pretium erat.
-                      </p>
-                      <p class="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing
-                        elit. Vivamus et varius tortor.
-                      </p>
-                    </div>
-                    <div class="mt-3">
-                      <button x-data="{ copied: false }"
-                        @click="copied = true; navigator.clipboard.writeText(&#39;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor. Aenean dui magna, vehicula in lacinia non, euismod sed odio. Aliquam erat volutpat. Integer iaculis eu tellus vel tincidunt. Sed sed dictum orci, in pretium erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor.&#39;); setTimeout(() =&gt; copied = false, 2000)"
-                        class="flex h-8 items-center gap-1 rounded-full border border-gray-100 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-500 dark:border-white/5 dark:bg-gray-900 dark:text-gray-400 dark:hover:text-white/90">
-                        <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                          viewBox="0 0 20 20" fill="none">
-                          <path
-                            d="M14.1567 14.1628H7.08803C6.39768 14.1628 5.83803 13.6031 5.83803 12.9128V5.8441M14.1567 14.1628L14.1567 15.416C14.1567 16.1064 13.5971 16.666 12.9067 16.666H4.58478C3.89442 16.666 3.33478 16.1064 3.33478 15.416V7.0941C3.33478 6.40374 3.89442 5.8441 4.58478 5.8441H5.83803M14.1567 14.1628H15.4152C16.1056 14.1628 16.6652 13.6031 16.6652 12.9128L16.6652 4.58392C16.6652 3.89357 16.1056 3.33392 15.4152 3.33392H7.08803C6.39768 3.33392 5.83803 3.89357 5.83803 4.58392V5.8441"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                          </path>
-                        </svg>
-                        <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                          viewBox="0 0 20 20" fill="none" style="display: none;">
-                          <path d="M16.6663 5L7.49967 14.1667L3.33301 10" stroke="currentColor" stroke-width="1.5"
-                            stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                        <span x-text="copied ? &#39;Copied&#39; : &#39;Copy&#39;">Copy</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Fixed Input Wrapper -->
-              <div
-                class="fixed bottom-5 left-1/2 z-20 w-full -translate-x-1/2 transform px-4 sm:px-6 lg:bottom-10 lg:px-8">
-                <!-- Container with max width -->
+            <div class="flex-1 xl:p-10 overflow-y-auto">
+              <div class="relative mx-auto flex flex-col h-full">
                 <div
-                  class="mx-auto w-full max-w-[720px] rounded-2xl border border-gray-200 bg-white p-5 shadow-xs dark:border-gray-800 dark:bg-gray-800">
-                  <!-- Textarea -->
-                  <textarea placeholder="Type your prompt here..."
-                    class="h-20 w-full resize-none border-none bg-transparent p-0 font-normal text-gray-800 outline-none placeholder:text-gray-400 focus:ring-0 dark:text-white"></textarea>
+                  class="h-full flex-1 flex flex-col rounded-3xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-y-auto">
+                  <!-- Header -->
+                  <div class="px-5 py-4 sm:px-6 sm:py-5">
+                    <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
+                      Example Form
+                    </h3>
+                  </div>
 
-                  <!-- Bottom Section -->
-                  <div class="flex items-center justify-between pt-2">
-                    <button
-                      class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                      <!-- Attach Icon -->
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
-                        <path
-                          d="M14.4194 11.7679L15.4506 10.7367C17.1591 9.02811 17.1591 6.25802 15.4506 4.54947C13.742 2.84093 10.9719 2.84093 9.2634 4.54947L8.2322 5.58067M11.77 14.4172L10.7365 15.4507C9.02799 17.1592 6.2579 17.1592 4.54935 15.4507C2.84081 13.7422 2.84081 10.9721 4.54935 9.26352L5.58285 8.23002M11.7677 8.23232L8.2322 11.7679"
-                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        </path>
-                      </svg>
-                      Attach
-                    </button>
+                  <!-- Content fills the rest -->
+                  <div
+                    class="flex-1 flex flex-col border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800 overflow-y-auto">
+                    <form class="flex-1 flex flex-col">
+                      <div class="-mx-2.5 flex-1 flex flex-col gap-y-5">
+                        <div class="w-full px-2.5">
+                          <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            First Name
+                          </label>
+                          <input type="text" placeholder="Enter first name"
+                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30">
+                        </div>
 
-                    <!-- Send Button -->
-                    <button
-                      class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-900 text-white transition hover:bg-gray-800 dark:bg-white/90 dark:text-gray-800 dark:hover:bg-gray-900 dark:hover:text-white/90">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
-                        <path d="M9.99674 3.33252L9.99675 16.667M5 8.32918L9.99984 3.33252L15 8.32918"
-                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        </path>
-                      </svg>
-                    </button>
+                        <div class="w-full flex-1 px-2.5 flex flex-col">
+                          <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Message
+                          </label>
+                          <textarea
+                            class="flex-1 resize-none dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            placeholder="Enter your message"></textarea>
+                        </div>
+
+                        <div class="w-full px-2.5">
+                          <button type="submit"
+                            class="bg-brand-500 hover:bg-brand-600 flex w-full items-center justify-center gap-2 rounded-lg p-3 text-sm font-medium text-white transition-colors">
+                            Send Message
+                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M4.98481 2.44399C3.11333 1.57147 1.15325 3.46979 1.96543 5.36824L3.82086 9.70527C3.90146 9.89367 3.90146 10.1069 3.82086 10.2953L1.96543 14.6323C1.15326 16.5307 3.11332 18.4291 4.98481 17.5565L16.8184 12.0395C18.5508 11.2319 18.5508 8.76865 16.8184 7.961L4.98481 2.44399ZM3.34453 4.77824C3.0738 4.14543 3.72716 3.51266 4.35099 3.80349L16.1846 9.32051C16.762 9.58973 16.762 10.4108 16.1846 10.68L4.35098 16.197C3.72716 16.4879 3.0738 15.8551 3.34453 15.2223L5.19996 10.8853C5.21944 10.8397 5.23735 10.7937 5.2537 10.7473L9.11784 10.7473C9.53206 10.7473 9.86784 10.4115 9.86784 9.99726C9.86784 9.58304 9.53206 9.24726 9.11784 9.24726L5.25157 9.24726C5.2358 9.20287 5.2186 9.15885 5.19996 9.11528L3.34453 4.77824Z">
+                              </path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -1869,7 +1779,7 @@
             </div>
           </div>
           <aside
-            :class="isSidebarOpen ? &#39;flex fixed xl:static top-0 right-0 z-999999 h-screen bg-white dark:bg-gray-900&#39; : &#39;hidden xl:flex&#39;"
+            :class="isSidebarOpen ? 'flex fixed xl:static top-0 right-0 z-999999 h-screen bg-white dark:bg-gray-900' : 'hidden xl:flex'"
             class="z-50 w-[280px] flex-col border-l border-gray-200 bg-white p-6 ease-in-out dark:border-gray-800 dark:bg-gray-900 hidden xl:flex">
             <button
               class="bg-brand-500 hover:bg-brand-600 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition">
@@ -2268,7 +2178,7 @@
 
                   <!-- Add more li items here as needed -->
                 </ul>
-                <div :class="showMore ? &#39;hidden&#39;:&#39;block&#39;"
+                <div :class="showMore ? 'hidden':'block'"
                   class="pointer-events-none absolute bottom-0 left-0 z-10 h-8 w-full bg-gradient-to-t from-white to-transparent dark:from-gray-900 block">
                 </div>
               </div>
@@ -2372,11 +2282,11 @@
                 <button x-on:click="showMore = !showMore"
                   class="text-primary-500 flex w-full items-center justify-between text-xs font-medium text-gray-400">
                   <!-- Text on the left -->
-                  <span x-text="showMore ? &#39;Show less...&#39; : &#39;Show more...&#39;">Show more...</span>
+                  <span x-text="showMore ? 'Show less...' : 'Show more...'">Show more...</span>
 
                   <!-- Arrow icon on the right -->
-                  <svg :class="{ &#39;rotate-180&#39;: showMore }" class="ml-2" xmlns="http://www.w3.org/2000/svg"
-                    width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <svg :class="{ 'rotate-180': showMore }" class="ml-2" xmlns="http://www.w3.org/2000/svg" width="16"
+                    height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M3.83331 6.41669L7.99998 10.5834L12.1666 6.41669" stroke="currentColor" stroke-width="1.2"
                       stroke-linecap="round" stroke-linejoin="round"></path>
                   </svg>
