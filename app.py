@@ -5,7 +5,6 @@ from blueprints.dashboard.routes import dashboard_bp
 from blueprints.admin.routes import admin_bp
 from blueprints.api.routes import api_bp
 from os import getenv
-from livereload import Server
 
 def create_app():
     app = Flask(__name__, template_folder="./templates")
@@ -63,9 +62,3 @@ def create_app():
 
 
 app = create_app()
-
-# if __name__ == '__main__':
-#     server = Server(app.wsgi_app)
-#     server.watch('templates/')
-#     server.watch('static/')
-#     server.serve(port=3000, debug=True)
