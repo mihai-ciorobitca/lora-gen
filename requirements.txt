@@ -3,3 +3,4 @@ supabase
 httpx
 requests
 python-dotenv
+gunicorn
