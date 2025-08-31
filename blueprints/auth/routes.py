@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import os
-from extensions import supabase
+from extensions import supabase, cache
 from utils.supabase_helpers import user_exists
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
@@ -9,8 +9,8 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-# ----------------- Email/Password Login -----------------
 @auth_bp.route("/login", methods=["GET", "POST"])
+@cache.cached(timeout=3600)
 def login():
     if request.method == "POST":
         try:
@@ -42,8 +42,8 @@ def login():
     return render_template("login.html")
 
 
-# ----------------- Email/Password Register -----------------
 @auth_bp.route("/register", methods=["GET", "POST"])
+@cache.cached(timeout=3600)
 def register():
     if request.method == "POST":
         email = request.form.get("email")
@@ -79,14 +79,12 @@ def register():
     return render_template("register.html")
 
 
-# ----------------- Logout -----------------
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     return redirect(url_for("index"))
 
 
-# ----------------- Google Login -----------------
 @auth_bp.route("/login/google")
 def login_google():
     response = supabase.auth.sign_in_with_oauth(
