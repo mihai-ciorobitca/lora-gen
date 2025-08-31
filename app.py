@@ -4,13 +4,14 @@ from blueprints.auth.routes import auth_bp
 from blueprints.dashboard.routes import dashboard_bp
 from blueprints.admin.routes import admin_bp
 from blueprints.api.routes import api_bp
-import os
+from os import getenv
+from livereload import Server
 
 def create_app():
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="./templates")
     app.config["CACHE_TYPE"] = "simple"
     app.config["CACHE_DEFAULT_TIMEOUT"] = 300
-    app.secret_key = os.getenv("FLASK_KEY")
+    app.secret_key = getenv("FLASK_KEY")
 
     cache.init_app(app)
 
@@ -20,19 +21,20 @@ def create_app():
     app.register_blueprint(api_bp)
 
     @app.route("/")
-    @cache.cached()
     @cache.cached(timeout=3600)
     def index():
         return render_template("index.html")
 
     @app.route("/pricing")
-    @cache.cached()
-    @cache.cached(timeout=3600)
+    #@cache.cached(timeout=3600)
     def pricing():
         return render_template("pricing.html")
     
+    @app.route("/success")
+    def success():
+        return render_template("success.html")
+    
     @app.errorhandler(404)
-    @cache.cached()
     @cache.cached(timeout=3600)
     def not_found(e):
         return render_template("404.html"), 404
@@ -47,6 +49,11 @@ def create_app():
     def server_error(e):
         return render_template("500.html"), 500
     
+    @app.route("/faq")
+    @cache.cached(timeout=3600)
+    def faq():
+        return render_template("faq.html"), 500
+    
     @app.route("/health")
     @cache.cached(timeout=0)
     def health_check():
@@ -56,3 +63,9 @@ def create_app():
 
 
 app = create_app()
+
+# if __name__ == '__main__':
+#     server = Server(app.wsgi_app)
+#     server.watch('templates/')
+#     server.watch('static/')
+#     server.serve(port=3000, debug=True)

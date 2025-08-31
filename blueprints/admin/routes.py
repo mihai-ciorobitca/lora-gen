@@ -4,10 +4,22 @@ from extensions import supabase_admin
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 
+
+def login_required(f):
+    from functools import wraps
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "is_admin" not in session:
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @admin_bp.route("/")
+@login_required
 def dashboard():
-    if not session.get("is_admin", False):
-        return redirect(url_for("auth.login"))
     response = supabase_admin.auth.admin.list_users()
     return render_template("admin.html", users=response)
 

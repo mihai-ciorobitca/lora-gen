@@ -1,24 +1,30 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, flash
-import httpx, traceback, logging
 from utils.workflow import build_payload
 from utils.supabase_helpers import (
-    get_history,
-    get_pending_jobs,
     add_pending_job,
 )
 from extensions import supabase
 from utils.vast_helpers import get_instance_info
-from time import sleep
-from requests import get
+import logging, traceback, httpx
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
+def login_required(f):
+    from functools import wraps
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("auth.login_get"))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @dashboard_bp.route("/dashboard", methods=["GET", "POST"])
-def dashboard_home():
-    print("Session contents:")
-    if "user" not in session:
-        return redirect(url_for("auth.login"))
+@login_required
+def dashboard():
 
     user = supabase.auth.get_user(session["access_token"]).user
     server_id = user.app_metadata.get("server_id") if user.app_metadata else None
@@ -54,36 +60,4 @@ def dashboard_home():
             logging.error("Image generation failed: %s\n%s", e, traceback.format_exc())
             flash("Failed to generate image.", "danger")
 
-    return render_template("dashboard.html", user=user)
-
-
-@dashboard_bp.route("/dashboard/pending")
-def dashboard_pending():
-    if "user" not in session:
-        return redirect(url_for("auth.login"))
-    pending_images = get_pending_jobs(session["user"])
-    return render_template("dashboard.html", pending_images=pending_images)
-
-
-@dashboard_bp.route("/dashboard/history")
-def dashboard_history():
-    if "user" not in session:
-        return redirect(url_for("auth.login"))
-    history = get_history(session["user"])
-    return render_template("dashboard.html", history=history)
-
-
-@dashboard_bp.route("/dashboard/account")
-def dashboard_account():
-    if "user" not in session:
-        return redirect(url_for("auth.login"))
-    user = supabase.auth.get_user(session["access_token"]).user
-    return render_template("dashboard.html", user=user)
-
-
-@dashboard_bp.route("/dashboard/settings")
-def dashboard_settings():
-    if "user" not in session:
-        return redirect(url_for("auth.login"))
-    user = supabase.auth.get_user(session["access_token"]).user
     return render_template("dashboard.html", user=user)

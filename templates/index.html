@@ -1,114 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lora Gen - AI Image Generator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
-<body class="bg-white text-gray-900">
-
-  <!-- Navbar -->
-  <header class="bg-white shadow sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <a href="/" class="text-2xl font-extrabold text-indigo-700">Lora Gen</a>
-      <nav class="space-x-6 hidden md:flex">
-        <a href="/" class="text-gray-700 hover:text-indigo-600">Home</a>
-        <a href="/dashboard" class="text-gray-700 hover:text-indigo-600">Dashboard</a>
-        <a href="/pricing" class="text-gray-700 hover:text-indigo-600">Pricing</a>
-        <a href="/auth/register" class="text-gray-700 hover:text-indigo-600">Sign Up</a>
-      </nav>
-      <a href="/auth/login" class="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">Login</a>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 text-white py-20">
-    <div class="max-w-5xl mx-auto px-6 text-center">
-      <h1 class="text-5xl font-extrabold mb-6">Generate Stunning Images with Lora Gen</h1>
-      <p class="text-lg mb-8">Turn your ideas into visuals. Train your own dataset and generate images with powerful prompts.</p>
-      <a href="/auth/register" class="px-8 py-4 bg-white text-indigo-700 font-bold rounded-lg shadow hover:bg-gray-100 transition">Get Started for Free</a>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="py-20 bg-gray-50">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <h2 class="text-3xl font-bold text-gray-900 mb-12">Why Choose Lora Gen?</h2>
-      <div class="grid md:grid-cols-3 gap-12">
-        <div class="p-6 bg-white rounded-xl shadow">
-          <div class="text-indigo-600 text-4xl mb-4">🎨</div>
-          <h3 class="text-xl font-semibold">Custom Training</h3>
-          <p class="text-gray-600 mt-2">Upload your dataset and train LoRA models tailored to your needs.</p>
-        </div>
-        <div class="p-6 bg-white rounded-xl shadow">
-          <div class="text-indigo-600 text-4xl mb-4">⚡</div>
-          <h3 class="text-xl font-semibold">Prompt-to-Image</h3>
-          <p class="text-gray-600 mt-2">Generate high-quality images from simple text prompts in seconds.</p>
-        </div>
-        <div class="p-6 bg-white rounded-xl shadow">
-          <div class="text-indigo-600 text-4xl mb-4">🌍</div>
-          <h3 class="text-xl font-semibold">For Everyone</h3>
-          <p class="text-gray-600 mt-2">Creators, designers, developers — anyone can unlock visual creativity.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it Works -->
-  <section class="py-20">
-    <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h2>
-      <div class="grid md:grid-cols-3 gap-12 text-center">
-        <div>
-          <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-indigo-100 text-indigo-700 rounded-full font-bold">1</div>
-          <h3 class="text-xl font-semibold">Upload Data</h3>
-          <p class="text-gray-600 mt-2">Train Lora Gen with your own dataset to create a unique style.</p>
-        </div>
-        <div>
-          <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-indigo-100 text-indigo-700 rounded-full font-bold">2</div>
-          <h3 class="text-xl font-semibold">Write Prompts</h3>
-          <p class="text-gray-600 mt-2">Describe what you want. Lora Gen understands natural language prompts.</p>
-        </div>
-        <div>
-          <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-indigo-100 text-indigo-700 rounded-full font-bold">3</div>
-          <h3 class="text-xl font-semibold">Generate Images</h3>
-          <p class="text-gray-600 mt-2">Get stunning AI-generated visuals instantly, ready to download.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing CTA -->
-  <section class="py-20 bg-indigo-700 text-white text-center">
-    <h2 class="text-3xl font-bold mb-6">Start Creating Today</h2>
-    <p class="mb-8 text-lg">Choose a plan that fits your needs. Free tier available.</p>
-    <a href="/pricing" class="px-8 py-4 bg-white text-indigo-700 font-bold rounded-lg shadow hover:bg-gray-100 transition">See Pricing</a>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-400 py-10 mt-12">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8">
-      <div>
-        <h3 class="text-xl font-bold text-white mb-3">Lora Gen</h3>
-        <p class="text-gray-400">Generate images from your own trained datasets using simple prompts.</p>
-      </div>
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-3">Quick Links</h4>
-        <ul class="space-y-2">
-          <li><a href="/" class="hover:text-white">Home</a></li>
-          <li><a href="/dashboard" class="hover:text-white">Dashboard</a></li>
-          <li><a href="/pricing" class="hover:text-white">Pricing</a></li>
-          <li><a href="/auth/register" class="hover:text-white">Sign Up</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-3">Contact</h4>
-        <p>Email: support@loragen.com</p>
-        <p>© 2025 Lora Gen. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
+<body>
+    
 </body>
 </html>

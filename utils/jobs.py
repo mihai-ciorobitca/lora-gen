@@ -1,4 +1,5 @@
-import requests, traceback
+from requests import get
+import traceback
 from extensions import logger
 from .supabase_helpers import get_pending_jobs, add_to_history
 from .storage import upload_to_bucket
@@ -25,7 +26,7 @@ def process_pending_jobs(user_email):
         for job in pending:
             filename, prompt = job["filename"], job["prompt"]
 
-            hist_resp = requests.get(f"{base_url}/history?max_items=20", cookies=cookies, headers=headers)
+            hist_resp = get(f"{base_url}/history?max_items=20", cookies=cookies, headers=headers)
             if hist_resp.status_code != 200:
                 continue
 
@@ -38,7 +39,7 @@ def process_pending_jobs(user_email):
                         if filename in img["filename"]:
                             found = True
                             payload = {"filename": filename, "type": "output", "subfolder": user_email}
-                            view_resp = requests.get(f"{base_url}/view", params=payload, cookies=cookies, headers=headers)
+                            view_resp = get(f"{base_url}/view", params=payload, cookies=cookies, headers=headers)
                             if view_resp.status_code == 200 and view_resp.content:
                                 img_bytes = view_resp.content
                                 storage_path = f"{user_email}/{filename}.png"
