@@ -7,7 +7,7 @@ from extensions import supabase
 from utils.vast_helpers import get_instance_info
 import logging, traceback, httpx
 
-dashboard_bp = Blueprint("dashboard", __name__)
+dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 
 def login_required(f):
@@ -22,8 +22,7 @@ def login_required(f):
     return decorated_function
 
 
-
-@dashboard_bp.get("/dashboard")
+@dashboard_bp.get("/")
 @login_required
 def dashboard_get():
     try:
@@ -31,14 +30,30 @@ def dashboard_get():
     except Exception as e:
         flash("Session expired. Please log in again.", "warning")
         return redirect(url_for("auth.login_get"))
-    server_id = user.app_metadata.get("server_id") if user.app_metadata else None
 
-    if not server_id:
-        return render_template("dashboard.html", user=user, restricted=True)
+    server_id = user.app_metadata.get("server_id") if user.app_metadata else False
 
-    return render_template("dashboard.html", user=user)
+    try:
+        response = (
+            supabase.table("jobs")
+            .select("*")
+            .eq("email", session["user"])
+            .order("created_at", desc=True)
+            .execute()
+        )
+        jobs = response.data if response.data else []
+        print(f"Jobs for {session['user']}: {jobs}", flush=True)
+    except Exception as e:
+        jobs = []
+        flash("Could not load jobs.", "danger")
+        print(f"Error fetching jobs: {e}")
 
-@dashboard_bp.post("/dashboard")
+    return render_template(
+        "dashboard/dashboard.html", user=user, jobs=jobs, restricted=not server_id
+    )
+
+
+@dashboard_bp.post("/")
 @login_required
 def dashboard_post():
     user = supabase.auth.get_user(session["access_token"]).user
@@ -46,7 +61,7 @@ def dashboard_post():
 
     prompt = request.form.get("prompt")
     filename = request.form.get("filename")
-    
+
     try:
         inst = get_instance_info(server_id)
         cookies = {f"C.{server_id}_auth_token": inst["token"]}
@@ -70,3 +85,32 @@ def dashboard_post():
     except Exception as e:
         logging.error("Image generation failed: %s\n%s", e, traceback.format_exc())
         flash("Failed to generate image.", "danger")
+
+
+@dashboard_bp.get("/jobs")
+@login_required
+def dasboard_jobs():
+    try:
+        supabase.auth.get_user(session["access_token"]).user
+    except Exception as e:
+        flash("Session expired. Please log in again.", "warning")
+        return redirect(url_for("auth.login_get"))
+    response = (
+        supabase.table("jobs")
+        .select("*")
+        #.eq("email", session["user"])
+        .order("created_at", desc=True)
+        .execute()
+    )
+    jobs = response.data if response.data else []
+    print(f"Jobs for {session['user']}: {jobs}", flush=True)
+    total_jobs = len(jobs)
+    pending_jobs = len([job for job in jobs if job["status"] == False])
+    done_jobs = len([job for job in jobs if job["status"] == True])
+    return render_template(
+        "dashboard/jobs.html",
+        jobs=jobs,
+        total_jobs=total_jobs,
+        pending_jobs=pending_jobs,
+        done_jobs=done_jobs,
+    )

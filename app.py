@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from extensions import cache
 from blueprints.auth.routes import auth_bp
 from blueprints.dashboard.routes import dashboard_bp
@@ -22,7 +22,8 @@ def create_app():
     @app.route("/")
     @cache.cached(timeout=3600)
     def index():
-        return render_template("index.html")
+        # return render_template("index.html")
+        return redirect(url_for('dashboard.dashboard_get'))
 
     @app.route("/pricing")
     #@cache.cached(timeout=3600)
