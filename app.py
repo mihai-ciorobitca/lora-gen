@@ -27,6 +27,7 @@ def create_app():
 
     @app.route("/pricing")
     #@cache.cached(timeout=3600)
+    
     def pricing():
         return render_template("pricing.html")
     

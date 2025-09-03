@@ -27,7 +27,9 @@ def login_required(f):
 def dashboard_get():
     try:
         user = supabase.auth.get_user(session["access_token"]).user
+        print(f"Fetched user: {user}", flush=True)
     except Exception as e:
+        print(f"Error fetching user: {e}", flush=True)
         flash("Session expired. Please log in again.", "warning")
         return redirect(url_for("auth.login_get"))
 
@@ -84,7 +86,9 @@ def dashboard_post():
 
     except Exception as e:
         logging.error("Image generation failed: %s\n%s", e, traceback.format_exc())
+        print(f"Error during image generation: {e}", flush=True)
         flash("Failed to generate image.", "danger")
+    return redirect(url_for("dashboard.dashboard_get"))
 
 
 @dashboard_bp.get("/jobs")

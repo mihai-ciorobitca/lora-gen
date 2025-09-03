@@ -23,4 +23,5 @@ def check_job():
 
     if url:
         mark_job_complete(user_email, filename, url)
-    return jsonify({"status": "ok"})
+        return jsonify({"status": "ok"})
+    return jsonify({"status": "pending"})
