@@ -21,7 +21,7 @@ def login_required_admin(f):
 @login_required_admin
 def dashboard():
     response = supabase_admin.auth.admin.list_users()
-    return render_template("admin.html", users=response)
+    return render_template("admin/admin.html", users=response)
 
 
 @admin_bp.post("/toggle_verify")
