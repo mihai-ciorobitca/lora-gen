@@ -56,7 +56,6 @@ def get_history(user_email):
         .order("created_at", desc=True)
         .execute()
     )
-    print("History fetch result:", res)
     return res.data or []
 
 

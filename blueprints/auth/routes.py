@@ -20,29 +20,27 @@ def login_post():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    # Admin login
     if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
         session["is_admin"] = True
         return redirect(url_for("admin.dashboard"))
 
-    # Supabase login
     try:
         resp = supabase.auth.sign_in_with_password(
             {"email": email, "password": password}
         )
+        print(resp)
         user, session_data = resp.user, resp.session
         if user and session_data:
             session["user"] = user.email
             session["access_token"] = session_data.access_token
+            session["refresh_token"] = session_data.refresh_token
+            flash("Login successful!", "login_success")
             return redirect(url_for("dashboard.dashboard_get"))
-
-        flash("Login failed. Please check credentials.", "danger")
-        # 👇 re-render login.html with flashed message
-        return render_template("auth/login.html")
+        flash("Login failed. Please check credentials.", "login_danger")
 
     except Exception as e:
-        flash(f"Login failed: {str(e)}", "danger")
-        return render_template("auth/login.html")
+        flash(f"Login failed: {str(e)}", "login_danger")
+    return render_template("auth/login.html")
 
 
 @auth_bp.get("/register")
@@ -81,13 +79,13 @@ def register_post():
         if user and session_data:
             session["user"] = user.email
             session["access_token"] = session_data.access_token
-            flash("Registration successful!", "success")
+            flash("Registration successful!", "register_success")
             return redirect(url_for("dashboard.dashboard"))
 
-        flash("Please confirm your email.", "warning")
+        flash("Please confirm your email.", "register_warning")
         return redirect(url_for("auth.login_get"))
     except Exception as e:
-        flash(f"Registration failed: {str(e)}", "danger")
+        flash(f"Registration failed: {str(e)}", "register_danger")
         return render_template("auth/register.html")
 
 

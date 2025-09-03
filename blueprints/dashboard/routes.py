@@ -6,34 +6,38 @@ from utils.supabase_helpers import (
 from extensions import supabase
 from utils.vast_helpers import get_instance_info
 import logging, traceback, httpx
+from functools import wraps
+
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 
 def login_required(f):
-    from functools import wraps
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user" not in session:
-            return redirect(url_for("auth.login_get"))
-        return f(*args, **kwargs)
-
+        access_token = session.get("access_token")
+        refresh_token = session.get("refresh_token")
+        if not access_token or not refresh_token:
+            print("No access or refresh token found. Redirecting to login.")
+            return redirect(url_for('auth.login_get'))
+        try:
+            response = supabase.auth.set_session(access_token, refresh_token)
+            if response.session:
+                session["access_token"] = response.session.access_token
+                session["refresh_token"] = response.session.refresh_token
+        except Exception as e:
+            print(f"An unexpected error occurred during session validation: {e}")
+            session.clear()
+            return redirect(url_for('auth.login_get'))
+        return f(response.session.user.user_metadata, *args, **kwargs)
     return decorated_function
 
 
 @dashboard_bp.get("/")
 @login_required
-def dashboard_get():
-    try:
-        user = supabase.auth.get_user(session["access_token"]).user
-        print(f"Fetched user: {user}", flush=True)
-    except Exception as e:
-        print(f"Error fetching user: {e}", flush=True)
-        flash("Session expired. Please log in again.", "warning")
-        return redirect(url_for("auth.login_get"))
-
-    server_id = user.app_metadata.get("server_id") if user.app_metadata else False
+def dashboard_get(user):
+    server_id = user.get("server_id")
+    email_verified = user.get("email_verified")
 
     try:
         response = (
@@ -41,25 +45,26 @@ def dashboard_get():
             .select("*")
             .eq("email", session["user"])
             .order("created_at", desc=True)
+            .limit(5)
             .execute()
         )
-        jobs = response.data if response.data else []
-        print(f"Jobs for {session['user']}: {jobs}", flush=True)
+        last_jobs = response.data if response.data else []
     except Exception as e:
-        jobs = []
+        last_jobs = []
         flash("Could not load jobs.", "danger")
-        print(f"Error fetching jobs: {e}")
 
     return render_template(
-        "dashboard/dashboard.html", user=user, jobs=jobs, restricted=not server_id
+        "dashboard/dashboard.html",
+        user=user,
+        last_jobs=last_jobs,
+        restricted=(not server_id or not email_verified),
     )
 
 
 @dashboard_bp.post("/")
 @login_required
-def dashboard_post():
-    user = supabase.auth.get_user(session["access_token"]).user
-    server_id = user.app_metadata.get("server_id") if user.app_metadata else None
+def dashboard_post(user):
+    server_id = user.get("server_id")
 
     prompt = request.form.get("prompt")
     filename = request.form.get("filename")
@@ -93,28 +98,86 @@ def dashboard_post():
 
 @dashboard_bp.get("/jobs")
 @login_required
-def dasboard_jobs():
-    try:
-        supabase.auth.get_user(session["access_token"]).user
-    except Exception as e:
-        flash("Session expired. Please log in again.", "warning")
-        return redirect(url_for("auth.login_get"))
+def dashboard_jobs(user):
+    page = session.get("page", 0)
+    page_size = 10
+
+    response = (
+        supabase.table("jobs").select("status").eq("email", session["user"]).execute()
+    )
+
+    jobs = response.data if response else []
+
+    pending_jobs = len([job for job in jobs if job["status"] == False])
+    done_jobs = len(jobs) - pending_jobs
+
     response = (
         supabase.table("jobs")
         .select("*")
-        #.eq("email", session["user"])
+        .eq("email", session["user"])
+        .range(page * page_size, (page + 1) * page_size)
         .order("created_at", desc=True)
         .execute()
     )
+
     jobs = response.data if response.data else []
-    print(f"Jobs for {session['user']}: {jobs}", flush=True)
-    total_jobs = len(jobs)
-    pending_jobs = len([job for job in jobs if job["status"] == False])
-    done_jobs = len([job for job in jobs if job["status"] == True])
+
+    if len(jobs) > page_size:
+        jobs = jobs[:page_size]
+        has_next_page = True
+    else:
+        has_next_page = False
+
     return render_template(
         "dashboard/jobs.html",
         jobs=jobs,
-        total_jobs=total_jobs,
         pending_jobs=pending_jobs,
         done_jobs=done_jobs,
+        page=page,
+        has_next_page=has_next_page,
+        user=user,
     )
+
+
+@dashboard_bp.get("/profile")
+@login_required
+def dashboard_user(user):
+    return render_template("dashboard/profile.html", user=user)
+
+
+@dashboard_bp.post("/reset_password")
+def dashboard_reset():
+    password = request.form.get("password")
+    try:
+        supabase.auth.update_user(
+            {"password": password}
+        )
+        flash("Password reset succesfully.", "reset_success")
+    except Exception as e:
+        print(str(e))
+        flash(str(e), "reset_danger")
+    return redirect(url_for("dashboard.dashboard_user"))
+
+
+@dashboard_bp.post("/jobs/next")
+@login_required
+def next_page():
+    page = session.get("page", 0)
+    session["page"] = page + 1
+    return redirect(url_for("dashboard.dasboard_jobs"))
+
+
+@dashboard_bp.post("/jobs/prev")
+@login_required
+def prev_page():
+    page = session.get("page", 0)
+    if page > 0:
+        session["page"] = page - 1
+    return redirect(url_for("dashboard.dasboard_jobs"))
+
+
+@dashboard_bp.post("/jobs/first")
+@login_required
+def first_page():
+    session["page"] = 0
+    return redirect(url_for("dashboard.dasboard_jobs"))
