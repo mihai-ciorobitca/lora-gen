@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from extensions import supabase, cache
 from utils.supabase_helpers import user_exists
 from os import getenv
+from requests import post
 
 ADMIN_EMAIL = getenv("ADMIN_EMAIL")
 ADMIN_PASSWORD = getenv("ADMIN_PASSWORD")
@@ -33,7 +34,7 @@ def login_post():
         "response": hcaptcha_token,
         "remoteip": request.remote_addr,
     }
-    resp = requests.post(verify_url, data=payload).json()
+    resp = post(verify_url, data=payload).json()
 
     if not resp.get("success"):
         flash("Captcha verification failed. Try again.", "danger")
