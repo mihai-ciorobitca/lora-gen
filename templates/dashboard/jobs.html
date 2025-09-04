@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0042)https://demo.tailadmin.com/support-tickets -->
 <html lang="en">
 
 <head>
@@ -11,7 +10,6 @@
   <title>
     Tickets List | TailAdmin - Tailwind CSS Admin Dashboard Template
   </title>
-  <link rel="icon" href="https://demo.tailadmin.com/favicon.ico">
   <style data-fullcalendar=""></style>
   <link href="css/style.css" rel="stylesheet">
   <script defer="" referrerpolicy="origin" src="js/s.js"></script>
@@ -47,7 +45,7 @@
       <!-- SIDEBAR HEADER -->
       <div :class="sidebarToggle ? &#39;justify-center&#39; : &#39;justify-between&#39;"
         class="sidebar-header flex items-center gap-2 pt-8 pb-7 justify-between">
-        <a href="https://demo.tailadmin.com/index.html">
+        <a>
           <span class="logo" :class="sidebarToggle ? &#39;hidden&#39; : &#39;&#39;">
             <img class="dark:hidden" src="./dashboard_files/logo.svg" alt="Logo">
             <img class="hidden dark:block" src="./dashboard_files/logo-dark.svg" alt="Logo">
@@ -187,7 +185,7 @@
             </button>
             <!-- Hamburger Toggle BTN -->
 
-            <a href="https://demo.tailadmin.com/index.html" class="xl:hidden">
+            <a class="xl:hidden">
               <img class="dark:hidden" src="./dashboard_files/logo.svg" alt="Logo">
               <img class="hidden dark:block" src="./dashboard_files/logo-dark.svg" alt="Logo">
             </a>
@@ -230,8 +228,7 @@
 
             <!-- User Area -->
             <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
-              <a class="flex items-center text-gray-700 dark:text-gray-400"
-                href="https://demo.tailadmin.com/text-generator#" @click.prevent="dropdownOpen = ! dropdownOpen">
+              <a class="flex items-center text-gray-700 dark:text-gray-400" @click.prevent="dropdownOpen = ! dropdownOpen">
                 <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
                   <img class="h-11 w-11 rounded-full" src="https://www.gravatar.com/avatar/?d=mp&s=96"
                     alt="User avatar">
@@ -291,8 +288,7 @@
               <nav>
                 <ol class="flex items-center gap-1.5">
                   <li>
-                    <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-                      href="https://demo.tailadmin.com/index.html">
+                    <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                       Home
                       <svg class="stroke-current" width="17" height="16" viewBox="0 0 17 16" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
