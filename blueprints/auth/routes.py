@@ -97,39 +97,48 @@ def logout():
 
 @auth_bp.route("/login/google")
 def login_google():
-    response = supabase.auth.sign_in_with_oauth(
-        {
-            "provider": "google",
-            "options": {"redirect_to": url_for("auth.google_callback", _external=True)},
-        }
-    )
-    return redirect(response.url)
+    try:
+        response = supabase.auth.sign_in_with_oauth(
+            {
+                "provider": "google",
+                "options": {
+                    "redirect_to": url_for("auth.google_callback", _external=True)
+                },
+            }
+        )
+        return redirect(response.get("url"))
+    except Exception as e:
+        flash(f"Google login setup failed: {str(e)}", "danger")
+        return redirect(url_for("auth.login_get"))
 
 
 @auth_bp.route("/google/callback")
 def google_callback():
     code = request.args.get("code")
-    next_url = request.args.get("next", url_for("dashboard.dashboard_home"))
+    next_url = request.args.get("next", url_for("dashboard.dashboard_get"))
 
     if not code:
-        flash("Google login failed. No authorization code returned.", "danger")
-        return redirect(url_for("auth.login"))
+        flash("Google login failed. No authorization code.", "danger")
+        return redirect(url_for("auth.login_get"))
 
     try:
         response = supabase.auth.exchange_code_for_session({"auth_code": code})
+
+        if not response.user:
+            flash("Google login failed: no user returned", "danger")
+            return redirect(url_for("auth.login_get"))
+
         user = response.user
+        session["user"] = user.email
+        session["user_id"] = user.id
 
-        if user:
-            session["user"] = user.email
-            session["username"] = user.email.split("@")[0]
-            session["access_token"] = response.session.access_token
-
-            flash("Logged in successfully with Google!", "success")
-            return redirect(next_url)
+        flash("Logged in successfully with Google! 🎉", "success")
+        return redirect(next_url)
 
     except Exception as e:
         flash(f"Google login failed: {str(e)}", "danger")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login_get"))
+
 
 
 @auth_bp.route("/reset_password", methods=["POST"])
