@@ -12,6 +12,8 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 @auth_bp.get("/login")
 @cache.cached(timeout=3600)
 def login_get():
+    if "user" in session:
+        return redirect(url_for("dashboard.dashboard_get"))
     return render_template("auth/login.html")
 
 
@@ -102,12 +104,14 @@ def login_google():
             {
                 "provider": "google",
                 "options": {
-                    "redirect_to": url_for("auth.google_callback", _external=True)
+                    "redirect_to": url_for("auth.google_callback", _external=True),
+                    "query_params": {"prompt": "select_account"},
                 },
             }
         )
-        return redirect(response.get("url"))
+        return redirect(response.url)
     except Exception as e:
+        print(str(e))
         flash(f"Google login setup failed: {str(e)}", "danger")
         return redirect(url_for("auth.login_get"))
 
@@ -138,7 +142,6 @@ def google_callback():
     except Exception as e:
         flash(f"Google login failed: {str(e)}", "danger")
         return redirect(url_for("auth.login_get"))
-
 
 
 @auth_bp.route("/reset_password", methods=["POST"])

@@ -20,11 +20,13 @@ def login_required(f):
         try:
             user_id = session["user_id"]
             user = supabase_admin.auth.admin.get_user_by_id(user_id).user
+            if not user:
+                session.clear()
+                return redirect(url_for("auth.login_get"))
         except Exception as e:
             print(f"An unexpected error occurred during session validation: {e}")
             session.clear()
             return redirect(url_for('auth.login_get'))
-        print(user.user_metadata)
         return f(user.user_metadata, *args, **kwargs)
     return decorated_function
 
