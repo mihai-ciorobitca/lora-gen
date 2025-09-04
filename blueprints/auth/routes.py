@@ -27,7 +27,6 @@ def login_post():
     password = request.form.get("password")
     hcaptcha_token = request.form.get("h-captcha-response")
 
-    # Step 1: Verify hCaptcha
     verify_url = "https://hcaptcha.com/siteverify"
     payload = {
         "secret": HCAPTCHA_SECRET,
@@ -61,7 +60,7 @@ def login_post():
 
     except Exception as e:
         flash(f"Login failed: {str(e)}", "login_danger")
-    return render_template("auth/login.html")
+    return redirect(url_for("auth.login_get"))
 
 
 @auth_bp.get("/register")
