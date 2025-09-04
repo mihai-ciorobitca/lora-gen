@@ -5,6 +5,9 @@ from os import getenv
 
 ADMIN_EMAIL = getenv("ADMIN_EMAIL")
 ADMIN_PASSWORD = getenv("ADMIN_PASSWORD")
+HCAPTCHA_SITE_KEY = getenv("HCAPTCHA_SITE_KEY")
+HCAPTCHA_SECRET = getenv("HCAPTCHA_SECRET")
+
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -14,13 +17,27 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 def login_get():
     if "user" in session:
         return redirect(url_for("dashboard.dashboard_get"))
-    return render_template("auth/login.html")
+    return render_template("auth/login.html", HCAPTCHA_SITE_KEY=HCAPTCHA_SITE_KEY)
 
 
 @auth_bp.post("/login")
 def login_post():
     email = request.form.get("email")
     password = request.form.get("password")
+    hcaptcha_token = request.form.get("h-captcha-response")
+
+    # Step 1: Verify hCaptcha
+    verify_url = "https://hcaptcha.com/siteverify"
+    payload = {
+        "secret": HCAPTCHA_SECRET,
+        "response": hcaptcha_token,
+        "remoteip": request.remote_addr,
+    }
+    resp = requests.post(verify_url, data=payload).json()
+
+    if not resp.get("success"):
+        flash("Captcha verification failed. Try again.", "danger")
+        return redirect(url_for("auth.login_get"))
 
     if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
         session["is_admin"] = True
