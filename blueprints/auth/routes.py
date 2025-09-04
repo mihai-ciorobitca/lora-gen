@@ -35,9 +35,10 @@ def login_post():
         "remoteip": request.remote_addr,
     }
     resp = post(verify_url, data=payload).json()
+    print(resp)
 
     if not resp.get("success"):
-        flash("Captcha verification failed. Try again.", "danger")
+        flash("Captcha verification failed. Try again.", "login_danger")
         return redirect(url_for("auth.login_get"))
 
     if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
