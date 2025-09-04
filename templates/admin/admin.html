@@ -51,7 +51,7 @@
               <form method="POST" action="{{ url_for('admin.update_server_id') }}" class="flex items-center space-x-2">
                 <input type="hidden" name="user_id" value="{{ user.id }}">
                 <input type="text" name="server_id"
-                  value="{{ user.app_metadata.get('server_id', '') if user.app_metadata else '' }}"
+                  value="{{ user.user_metadata.get('server_id', '') if user.user_metadata else '' }}"
                   placeholder="Enter server id"
                   class="rounded-lg border border-gray-300 p-2 w-28 text-sm focus:ring-2 focus:ring-indigo-600 focus:border-transparent">
                 <button type="submit"
@@ -67,6 +67,7 @@
               <!-- Verify Toggle -->
               <form method="POST" action="{{ url_for('admin.toggle_verify') }}">
                 <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="verified" value="{{ 'true' if user.user_metadata.email_verified else 'false' }}">
                 <button type="submit" class="relative inline-flex h-6 w-11 items-center rounded-full transition
                   {{ 'bg-green-500' if user.user_metadata.email_verified else 'bg-gray-300' }}">
                   <span class="sr-only">Verify user</span>

@@ -3,7 +3,7 @@ from utils.workflow import build_payload
 from utils.supabase_helpers import (
     add_pending_job,
 )
-from extensions import supabase
+from extensions import supabase, supabase_admin
 from utils.vast_helpers import get_instance_info
 import logging, traceback, httpx
 from functools import wraps
@@ -15,21 +15,17 @@ dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        access_token = session.get("access_token")
-        refresh_token = session.get("refresh_token")
-        if not access_token or not refresh_token:
-            print("No access or refresh token found. Redirecting to login.")
+        if not session.get("user_id", False):
             return redirect(url_for('auth.login_get'))
         try:
-            response = supabase.auth.set_session(access_token, refresh_token)
-            if response.session:
-                session["access_token"] = response.session.access_token
-                session["refresh_token"] = response.session.refresh_token
+            user_id = session["user_id"]
+            user = supabase_admin.auth.admin.get_user_by_id(user_id).user
         except Exception as e:
             print(f"An unexpected error occurred during session validation: {e}")
             session.clear()
             return redirect(url_for('auth.login_get'))
-        return f(response.session.user.user_metadata, *args, **kwargs)
+        print(user.user_metadata)
+        return f(user.user_metadata, *args, **kwargs)
     return decorated_function
 
 
@@ -74,8 +70,6 @@ def dashboard_post(user):
         cookies = {f"C.{server_id}_auth_token": inst["token"]}
         base_url = f"http://{inst['ip_address']}:{inst['port']}/api"
         headers = {"Content-Type": "application/json", "Accept": "*/*"}
-
-        print(cookies, base_url, headers)
 
         payload = build_payload(user.email, filename, prompt)
         with httpx.Client(timeout=30.0) as client:

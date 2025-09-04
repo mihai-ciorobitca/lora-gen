@@ -28,27 +28,28 @@ def dashboard():
 @login_required_admin
 def toggle_verify():
     user_id = request.form["user_id"]
-    user = supabase_admin.auth.admin.get_user_by_id(user_id).user
-    verified = user.user_metadata.get("email_verified", False)
-    supabase_admin.auth.admin.update_user_by_id(
-        user_id, {"user_metadata": {"email_verified": not verified}}
-    )
-    flash("User verification updated.", "success")
+    verified_str = request.form["verified"]
+    verified = verified_str == "true"
+    try:
+        supabase_admin.auth.admin.update_user_by_id(
+            user_id, {"user_metadata": {"email_verified": not verified}}
+        )
+        flash("User verification updated.", "success")
+    except Exception as e:
+        flash(f"Error updating server ID: {str(e)}", "danger")
     return redirect(url_for("admin.dashboard"))
 
 
 @admin_bp.post("/update_server_id")
 @login_required_admin
 def update_server_id():
-    if not session.get("is_admin", False):
-        return redirect(url_for("auth.login"))
     user_id = request.form.get("user_id")
     server_id = request.form.get("server_id")
-
     try:
         supabase_admin.auth.admin.update_user_by_id(
-            user_id, {"app_metadata": {"server_id": server_id}}
+            user_id, {"user_metadata": {"server_id": server_id}}
         )
+
         flash("Server ID updated successfully!", "success")
     except Exception as e:
         flash(f"Error updating server ID: {str(e)}", "danger")

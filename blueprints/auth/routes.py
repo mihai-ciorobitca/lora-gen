@@ -32,8 +32,8 @@ def login_post():
         user, session_data = resp.user, resp.session
         if user and session_data:
             session["user"] = user.email
-            session["access_token"] = session_data.access_token
-            session["refresh_token"] = session_data.refresh_token
+            session["user_id"] = user.id
+            print(session["user_id"])
             flash("Login successful!", "login_success")
             return redirect(url_for("dashboard.dashboard_get"))
         flash("Login failed. Please check credentials.", "login_danger")
@@ -78,7 +78,7 @@ def register_post():
         user, session_data = resp.user, resp.session
         if user and session_data:
             session["user"] = user.email
-            session["access_token"] = session_data.access_token
+            session["user_id"] = user.id
             flash("Registration successful!", "register_success")
             return redirect(url_for("dashboard.dashboard"))
 
