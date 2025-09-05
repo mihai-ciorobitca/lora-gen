@@ -161,7 +161,6 @@ def google_callback():
 
 @auth_bp.get("/reset")
 def reset_get():
-    return str(request.url)
     token = request.args.get("token")
     if not token:
         flash("Invalid or missing token.", "login_danger")
@@ -211,7 +210,7 @@ def recovery_post():
     try:
         supabase.auth.reset_password_for_email(
             email,
-            {"redirect_to": url_for("auth.reset_get", _external=True)}
+            {"redirect_to": url_for("auth.reset_get", token="{token}", _external=True)}
         )
         flash("Check your email for the password reset link!", "login_success")
         return redirect(url_for("auth.login_get"))
