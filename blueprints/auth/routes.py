@@ -184,6 +184,7 @@ def reset_post():
 
     try:
         supabase_admin.auth.update_user(
+            token, 
             {"password": new_password}
         )
         flash("Password reset successfully ✅", "login_success")
