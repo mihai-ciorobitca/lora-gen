@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from extensions import supabase, cache
 from utils.supabase_helpers import user_exists
 from os import getenv
 from requests import post
@@ -14,7 +13,6 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth_bp.get("/login")
-@cache.cached(timeout=3600)
 def login_get():
     if "user" in session:
         return redirect(url_for("dashboard.dashboard_get"))
@@ -64,7 +62,6 @@ def login_post():
 
 
 @auth_bp.get("/register")
-@cache.cached(timeout=3600)
 def register_get():
     return render_template("auth/register.html")
 
@@ -162,7 +159,6 @@ def google_callback():
 
 
 @auth_bp.get("/reset")
-@cache.cached(timeout=3600)
 def reset_get():
     token = request.args.get("token")
     if not token:
@@ -199,7 +195,6 @@ def reset_post():
 
 
 @auth_bp.get("/recovery")
-@cache.cached(timeout=3600)
 def recovery_get():
     return render_template("auth/recovery.html")
 
