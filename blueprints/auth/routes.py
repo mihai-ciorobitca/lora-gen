@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from extensions import supabase
 from utils.supabase_helpers import user_exists
 from os import getenv
 from requests import post
