@@ -94,7 +94,6 @@ def register_post():
                 },
             }
         )
-        print(resp)
         user, session_data = resp.user, resp.session
         if user and session_data:
             session["user"] = user.email
@@ -112,7 +111,7 @@ def register_post():
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return redirect(url_for("index"))
+    return redirect(url_for("auth.login_get"))
 
 
 @auth_bp.route("/login/google")

@@ -11,11 +11,11 @@
 <body
   class="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-700 flex items-center justify-center p-4">
 
-  <div class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl p-6 flex flex-col h-[90vh]">
+  <main class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl p-6 flex flex-col h-[90vh]">
+
     <!-- Header -->
-    <div class="text-center mb-6">
+    <header class="text-center mb-6">
       <div class="mx-auto w-16 h-16 flex items-center justify-center bg-indigo-100 text-indigo-700 rounded-full">
-        <!-- Heroicon: Cog -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-8 h-8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h3m7.5 6a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -23,16 +23,16 @@
       </div>
       <h2 class="mt-4 text-2xl font-bold text-gray-900">Admin - Manage Users</h2>
       <p class="text-gray-600">View, search, and assign server IDs</p>
-    </div>
+    </header>
 
     <!-- Search -->
     <div class="mb-4">
       <input id="searchInput" type="text" placeholder="Search by email ..."
-        class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-600 focus:border-transparent shadow-sm">
+        class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-600 shadow-sm">
     </div>
 
     <!-- Desktop Table -->
-    <div class="hidden md:block flex-grow overflow-auto border rounded-lg shadow-sm">
+    <section class="hidden md:block flex-grow overflow-auto border rounded-lg shadow-sm">
       <table class="w-full text-left border-collapse">
         <thead class="sticky top-0 bg-gray-100 shadow-sm">
           <tr>
@@ -52,35 +52,33 @@
                 <input type="hidden" name="user_id" value="{{ user.id }}">
                 <input type="text" name="server_id"
                   value="{{ user.user_metadata.get('server_id', '') if user.user_metadata else '' }}"
-                  placeholder="Enter server id"
-                  class="rounded-lg border border-gray-300 p-2 w-28 text-sm focus:ring-2 focus:ring-indigo-600 focus:border-transparent">
+                  placeholder="Server ID"
+                  class="rounded-lg border border-gray-300 p-2 w-28 text-sm focus:ring-2 focus:ring-indigo-600">
                 <button type="submit"
-                  class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-indigo-700 transition">
+                  class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-700 transition">
                   Save
                 </button>
               </form>
             </td>
-            <td class="p-3 text-xs text-gray-500">
-              {{ user.last_sign_in_at or "Never" }}
-            </td>
+            <td class="p-3 text-xs text-gray-500">{{ user.last_sign_in_at or "Never" }}</td>
             <td class="p-3">
-              <!-- Verify Toggle -->
               <form method="POST" action="{{ url_for('admin.toggle_verify') }}">
                 <input type="hidden" name="user_id" value="{{ user.id }}">
-                <input type="hidden" name="verified" value="{{ 'true' if user.user_metadata.email_verified else 'false' }}">
-                <button type="submit" class="relative inline-flex h-6 w-11 items-center rounded-full transition
-                  {{ 'bg-green-500' if user.user_metadata.email_verified else 'bg-gray-300' }}">
+                <input type="hidden" name="verified"
+                  value="{{ 'true' if user.user_metadata.email_verified else 'false' }}"/>
+                <button type="submit"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full transition {{ 'bg-green-500' if user.user_metadata.email_verified else 'bg-gray-300' }}">
                   <span class="sr-only">Verify user</span>
-                  <span class="inline-block h-4 w-4 transform rounded-full bg-white transition
-                  {{ 'translate-x-6' if user.user_metadata.email_verified else 'translate-x-1' }}"></span>
+                  <span
+                    class="inline-block h-4 w-4 transform rounded-full bg-white transition {{ 'translate-x-6' if user.user_metadata.email_verified else 'translate-x-1' }}"></span>
                 </button>
               </form>
             </td>
             <td class="p-3">
               <form method="POST" action="{{ url_for('admin.delete_user') }}">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}"/>
                 <button type="submit"
-                  class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-red-600 transition">
+                  class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition">
                   Delete
                 </button>
               </form>
@@ -89,78 +87,58 @@
           {% endfor %}
         </tbody>
       </table>
-    </div>
+    </section>
 
     <!-- Mobile Cards -->
-    <div id="userCards" class="block md:hidden space-y-4 overflow-auto flex-grow">
+    <section id="userCards" class="block md:hidden space-y-4 overflow-auto flex-grow">
       {% for user in users %}
       <div class="border rounded-lg shadow-sm p-4 bg-gray-50">
         <p class="text-sm font-semibold text-gray-800">{{ user.email }}</p>
         <p class="text-xs text-gray-500 break-all">ID: {{ user.id }}</p>
         <p class="text-xs text-gray-500">Last login: {{ user.last_sign_in_at or "Never" }}</p>
 
-        <!-- Server ID form -->
         <form method="POST" action="{{ url_for('admin.update_server_id') }}" class="mt-3 flex items-center space-x-2">
           <input type="hidden" name="user_id" value="{{ user.id }}">
           <input type="text" name="server_id"
             value="{{ user.app_metadata.get('server_id', '') if user.app_metadata else '' }}" placeholder="Server ID"
-            class="flex-grow rounded-lg border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:border-transparent">
+            class="flex-grow rounded-lg border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-indigo-600">
           <button type="submit"
-            class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-indigo-700 transition">
+            class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-700 transition">
             Save
           </button>
         </form>
 
-        <!-- Verify Toggle -->
         <form method="POST" action="{{ url_for('admin.toggle_verify') }}" class="mt-3">
           <input type="hidden" name="user_id" value="{{ user.id }}">
-          <button type="submit" class="relative inline-flex h-6 w-11 items-center rounded-full transition
-            {{ 'bg-green-500' if user.user_metadata.email_verified else 'bg-gray-300' }}">
+          <input type="hidden" name="verified" value="{{ 'true' if user.user_metadata.email_verified else 'false' }}">
+          <button type="submit"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition {{ 'bg-green-500' if user.user_metadata.email_verified else 'bg-gray-300' }}">
             <span class="sr-only">Verify user</span>
-            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition
-            {{ 'translate-x-6' if user.user_metadata.email_verified else 'translate-x-1' }}"></span>
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-white transition {{ 'translate-x-6' if user.user_metadata.email_verified else 'translate-x-1' }}"></span>
           </button>
         </form>
 
-        <!-- Actions -->
-        <div class="mt-3 flex space-x-2">
-          <form method="POST" action="{{ url_for('admin.delete_user') }}" class="flex-1">
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <button type="submit"
-              class="w-full bg-red-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-red-600 transition">
-              Delete
-            </button>
-          </form>
-        </div>
-
+        <form method="POST" action="{{ url_for('admin.delete_user') }}" class="mt-3">
+          <input type="hidden" name="user_id" value="{{ user.id }}">
+          <button type="submit"
+            class="w-full bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition">
+            Delete
+          </button>
+        </form>
       </div>
       {% endfor %}
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <!-- JS for search -->
   <script>
-    const searchInput = document.getElementById("searchInput");
-    const desktopRows = document.querySelectorAll("#userTableDesktop tr");
-    const mobileCards = document.querySelectorAll("#userCards > div");
-
-    searchInput.addEventListener("input", function () {
+    document.getElementById("searchInput").addEventListener("input", function () {
       const term = this.value.toLowerCase();
-
-      // Filter table rows
-      desktopRows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(term) ? "" : "none";
-      });
-
-      // Filter mobile cards
-      mobileCards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(term) ? "" : "none";
+      document.querySelectorAll("#userTableDesktop tr, #userCards > div").forEach(el => {
+        el.style.display = el.textContent.toLowerCase().includes(term) ? "" : "none";
       });
     });
   </script>
-
 </body>
 
 </html>
