@@ -161,30 +161,63 @@ def google_callback():
         return redirect(url_for("auth.login_get"))
 
 
-@auth_bp.route("/reset_password", methods=["POST"])
-def reset_password():
-    if "user" not in session:
-        flash("You must be logged in to reset your password.", "error")
-        return redirect(url_for("auth.login"))
+@auth_bp.get("/reset")
+@cache.cached(timeout=3600)
+def reset_get():
+    token = request.args.get("token")
+    if not token:
+        flash("Invalid or missing token.", "error")
+        return redirect(url_for("auth.login_get"))
 
+    return render_template("auth/reset.html", token=token)
+
+
+@auth_bp.post("/reset")
+def reset_post():
     new_password = request.form.get("new_password")
+    token = request.form.get("token")
 
     if not new_password or len(new_password) < 6:
-        flash("Password must be at least 6 characters long.", "error")
-        return redirect(url_for("dashboard.dashboard_settings"))
+        flash("Password must be at least 6 characters long.", "login_danger")
+        return redirect(request.url)
+
+    if not token:
+        flash("Missing reset token.", "login_danger")
+        return redirect(url_for("auth.login_get"))
 
     try:
-        user = supabase.auth.get_user(session["access_token"]).user
-
-        if not user:
-            flash("User not found.", "error")
-            return redirect(url_for("dashboard.dashboard_settings"))
-
-        supabase.auth.update_user({"password": new_password})
-
-        flash("Password reset successfully ✅", "success")
-        return redirect(url_for("dashboard.dashboard_settings"))
+        supabase.auth.update_user(
+            {"password": new_password},
+            token=token
+        )
+        flash("Password reset successfully ✅", "login_success")
+        return redirect(url_for("auth.login_get"))
 
     except Exception as e:
-        flash("Something went wrong while resetting password.", "error")
-        return redirect(url_for("dashboard.dashboard_settings"))
+        flash(f"Something went wrong while resetting password: {str(e)}", "login_danger")
+        return redirect(url_for("auth.login_get"))
+
+
+@auth_bp.get("/recovery")
+@cache.cached(timeout=3600)
+def recovery_get():
+    return render_template("auth/recovery.html")
+
+
+@auth_bp.post("/recovery")
+def recovery_post():
+    email = request.form.get("email")
+    if not email:
+        flash("Please provide your email.", "error")
+        return redirect(url_for("auth.recovery"))
+
+    try:
+        supabase.auth.reset_password_for_email(
+            email,
+            {"redirect_to": url_for("auth.reset_get", _external=True)}
+        )
+        flash("Check your email for the password reset link!", "login_success")
+        return redirect(url_for("auth.login_get"))
+    except Exception as e:
+        flash(f"Failed to send reset email: {str(e)}", "error")
+        return redirect(url_for("auth.recovery"))
