@@ -205,7 +205,7 @@ def recovery_post():
     email = request.form.get("email")
     if not email:
         flash("Please provide your email.", "error")
-        return redirect(url_for("auth.recovery"))
+        return redirect(url_for("auth.recovery_get"))
 
     try:
         supabase_admin.auth.reset_password_for_email(
