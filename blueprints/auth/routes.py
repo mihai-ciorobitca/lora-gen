@@ -208,7 +208,7 @@ def recovery_post():
         return redirect(url_for("auth.recovery"))
 
     try:
-        supabase_admin.auth.api.reset_password_for_email(
+        supabase_admin.auth.reset_password_for_email(
             email,
             {"redirect_to": url_for("auth.reset_get", _external=True)}
         )
