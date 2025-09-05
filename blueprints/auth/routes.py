@@ -170,12 +170,12 @@ def reset_post():
     token = request.form.get("token")
 
     if not new_password or len(new_password) < 6:
-        flash("Password must be at least 6 characters long.", "login_danger")
+        flash("Password must be at least 6 characters long.", "reset_danger")
         return redirect(request.url)
 
     if not token:
-        flash("Missing reset token.", "login_danger")
-        return redirect(url_for("auth.login_get"))
+        flash("Missing reset token.", "reset_danger")
+        return redirect(url_for("auth.reset_get"))
 
     try:
         supabase_admin.auth.update_user(
@@ -185,9 +185,10 @@ def reset_post():
         flash("Password reset successfully ✅", "login_success")
         return redirect(url_for("auth.login_get"))
 
+
     except Exception as e:
-        flash(f"Something went wrong while resetting password: {str(e)}", "login_danger")
-        return redirect(url_for("auth.login_get"))
+        flash(f"Something went wrong while resetting password: {str(e)}", "reset_danger")
+        return redirect(url_for("auth.reset_get"))
 
 
 @auth_bp.get("/recovery")
