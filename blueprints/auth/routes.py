@@ -161,7 +161,7 @@ def google_callback():
 
 @auth_bp.get("/reset")
 def reset_get():
-    token = request.args.get("token")
+    token = request.args.get("access_token")
     if not token:
         flash("Invalid or missing token.", "login_danger")
         return redirect(url_for("auth.login_get"))
