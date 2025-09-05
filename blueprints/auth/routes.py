@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from extensions import supabase
+from extensions import supabase_admin, supabase
 from utils.supabase_helpers import user_exists
 from os import getenv
 from requests import post
@@ -161,12 +161,12 @@ def google_callback():
 
 @auth_bp.get("/reset")
 def reset_get():
-    token = request.args.get("token")
-    if not token:
+    access_token = request.args.get("access_token")
+    if not access_token:
         flash("Invalid or missing token.", "login_danger")
-        return redirect(url_for("auth.login_get"))
+        return str(request.url)
 
-    return render_template("auth/reset.html", token=token)
+    return render_template("auth/reset.html", token=access_token)
 
 
 @auth_bp.post("/reset")
@@ -183,9 +183,8 @@ def reset_post():
         return redirect(url_for("auth.login_get"))
 
     try:
-        supabase.auth.update_user(
-            {"password": new_password},
-            token=token
+        supabase_admin.auth.update_user(
+            {"password": new_password}
         )
         flash("Password reset successfully ✅", "login_success")
         return redirect(url_for("auth.login_get"))
@@ -208,9 +207,9 @@ def recovery_post():
         return redirect(url_for("auth.recovery"))
 
     try:
-        supabase.auth.reset_password_for_email(
+        supabase_admin.auth.api.reset_password_for_email(
             email,
-            {"redirect_to": url_for("auth.reset_get", token="{token}", _external=True)}
+            {"redirect_to": url_for("auth.reset_get", _external=True)}
         )
         flash("Check your email for the password reset link!", "login_success")
         return redirect(url_for("auth.login_get"))
