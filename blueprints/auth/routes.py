@@ -210,7 +210,7 @@ def recovery_post():
     try:
         supabase.auth.reset_password_for_email(
             email,
-            {"redirect_to": "localhost:3000/auth/reset"}#url_for("auth.reset_get", _external=True)}
+            {"redirect_to": url_for("auth.reset_get", _external=True)}
         )
         flash("Check your email for the password reset link!", "login_success")
         return redirect(url_for("auth.login_get"))
