@@ -167,19 +167,20 @@ def reset_get():
 @auth_bp.post("/reset")
 def reset_post():
     new_password = request.form.get("new_password")
-    token = request.form.get("token")
+    access_token = request.form.get("access_token")
+    refresh_token = request.form.get("refresh_token")
 
     if not new_password or len(new_password) < 6:
         flash("Password must be at least 6 characters long.", "reset_danger")
         return redirect(request.url)
 
-    if not token:
+    if not access_token or not refresh_token:
         flash("Missing reset token.", "reset_danger")
         return redirect(url_for("auth.reset_get"))
 
     try:
+        supabase.auth.set_session(access_token, refresh_token)
         supabase.auth.update_user(
-            token, 
             {"password": new_password}
         )
         flash("Password reset successfully ✅", "login_success")

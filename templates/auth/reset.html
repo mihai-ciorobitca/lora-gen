@@ -82,7 +82,8 @@
               {% endif %}
               {% endwith %}
             <form method="POST" action="{{ url_for('auth.reset_post') }}">
-              <input type="hidden" name="token" id="token">
+              <input type="hidden" name="access_token" id="access_token">
+              <input type="hidden" name="refresh_token" id="refresh_token">
               <div class="space-y-5">
                 <!-- Email -->
                 <div>
@@ -174,9 +175,11 @@
   <script>
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    const token = params.get("access_token");
-    if (token) {
-      document.getElementById("token").value = token;
+    const access_token = params.get("access_token");
+    const refresh_token = params.get("refresh_token");
+    if (access_token && refresh_token) {
+      document.getElementById("access_token").value = access_token;
+      document.getElementById("refresh_token").value = refresh_token;
     }
   </script>
 
