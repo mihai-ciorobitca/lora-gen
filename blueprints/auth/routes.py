@@ -166,7 +166,7 @@ def google_callback():
 def reset_get():
     token = request.args.get("token")
     if not token:
-        flash("Invalid or missing token.", "error")
+        flash("Invalid or missing token.", "login_danger")
         return redirect(url_for("auth.login_get"))
 
     return render_template("auth/reset.html", token=token)
