@@ -178,7 +178,7 @@ def reset_post():
         return redirect(url_for("auth.reset_get"))
 
     try:
-        supabase_admin.auth.update_user(
+        supabase.auth.update_user(
             token, 
             {"password": new_password}
         )
@@ -204,7 +204,7 @@ def recovery_post():
         return redirect(url_for("auth.recovery_get"))
 
     try:
-        supabase_admin.auth.reset_password_for_email(
+        supabase.auth.reset_password_for_email(
             email,
             {"redirect_to": url_for("auth.reset_get", _external=True)}
         )
